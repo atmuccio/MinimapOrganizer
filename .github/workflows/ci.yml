@@ -22,7 +22,7 @@ jobs:
 
       - name: Verify Lua syntax
         run: |
-          find . -name "*.lua" -print0 | xargs -0 -I {} luac -p {}
+          find . -type f -name "*.lua" -print0 | xargs -0 -I {} luac -p {}
           echo "All Lua files compile successfully"
 
   luacheck:
