@@ -1,0 +1,25 @@
+## Interface: 120000
+## Title: MinimapOrganizer
+## Notes: Collects minimap buttons into a movable, organized window with categories and favorites
+## Author: Your Name
+## Version: 1.0.0
+## SavedVariablesPerCharacter: MinimapOrganizerDB
+## IconTexture: Interface\ICONS\INV_Misc_Bag_10
+## Category: Map
+
+# Locales
+Locales\enUS.lua
+
+# Core
+Core\Utils.lua
+Core\Database.lua
+Core\Init.lua
+
+# Modules
+Modules\ButtonScanner.lua
+Modules\ButtonManager.lua
+
+# UI
+UI\MinimapButton.lua
+UI\CollectionWindow.lua
+UI\Settings.lua

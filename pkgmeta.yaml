@@ -1,0 +1,16 @@
+package-as: MinimapOrganizer
+
+enable-nolib-creation: no
+
+ignore:
+  - .git
+  - .github
+  - .gitignore
+  - .gitattributes
+  - "*.md"
+  - .luacheckrc
+  - .editorconfig
+
+manual-changelog:
+  filename: CHANGELOG.md
+  markup-type: markdown
