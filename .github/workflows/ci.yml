@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  compile:
+    name: Syntax Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Lua
+        uses: leafo/gh-actions-lua@v10
+        with:
+          luaVersion: "5.1"
+
+      - name: Verify Lua syntax
+        run: |
+          find . -name "*.lua" -print0 | xargs -0 -I {} luac -p {}
+          echo "All Lua files compile successfully"
+
+  luacheck:
+    name: Lua Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Lua
+        uses: leafo/gh-actions-lua@v10
+        with:
+          luaVersion: "5.1"
+
+      - name: Install LuaRocks
+        uses: leafo/gh-actions-luarocks@v4
+
+      - name: Install luacheck
+        run: luarocks install luacheck
+
+      - name: Run luacheck
+        run: luacheck . --config .luacheckrc
+
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Gitleaks (Secret Scanning)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
