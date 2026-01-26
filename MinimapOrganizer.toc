@@ -1,11 +1,12 @@
 ## Interface: 120000
 ## Title: MinimapOrganizer
 ## Notes: Collects minimap buttons into a movable, organized window with categories and favorites
-## Author: Your Name
+## Author: atmuccio
 ## Version: 1.0.0
 ## SavedVariablesPerCharacter: MinimapOrganizerDB
-## IconTexture: Interface\ICONS\INV_Misc_Bag_10
+## IconTexture: Interface\ICONS\Garrison_Building_Storehouse
 ## Category: Map
+## X-Curse-Project-ID: 1444854
 
 # Locales
 Locales\enUS.lua
