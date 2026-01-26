@@ -45,7 +45,7 @@ jobs:
         run: luarocks install luacheck
 
       - name: Run luacheck
-        run: luacheck . --config .luacheckrc
+        run: luacheck . --config .luacheckrc --exclude-files .luarocks
 
   security:
     name: Security Scan

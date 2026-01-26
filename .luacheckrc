@@ -5,13 +5,16 @@ self = false
 
 exclude_files = {
     ".release",
+    ".luarocks",
 }
 
 ignore = {
+    "122", -- Setting read-only global (addon namespace creation)
     "211", -- Unused local variable
     "212", -- Unused argument
     "213", -- Unused loop variable
     "311", -- Value assigned to variable is unused
+    "432", -- Shadowing upvalue argument (common pattern for self in callbacks)
     "542", -- Empty if branch
 }
 
@@ -42,6 +45,7 @@ globals = {
     "SLASH_MINIMAPORGANIZER2",
     "C_Timer",
     "MinimalSliderWithSteppersMixin",
+    "UISpecialFrames",
 
     -- WoW frame methods added dynamically
     "tinsert",
