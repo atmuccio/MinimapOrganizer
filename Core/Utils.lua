@@ -84,3 +84,74 @@ function MO.Utils.RandomCategoryColor()
         0.4 + math.random() * 0.4,
     }
 end
+
+-- Get the addon name from LibDBIcon registry if available
+function MO.Utils.GetAddonFromLibDBIcon(frameName)
+    -- LibDBIcon stores buttons in LibStub("LibDBIcon-1.0").objects
+    local LDBIcon = LibStub and LibStub("LibDBIcon-1.0", true)
+    if LDBIcon and LDBIcon.objects then
+        for name, button in pairs(LDBIcon.objects) do
+            if button:GetName() == frameName then
+                return name  -- This is the registered addon/data broker name
+            end
+        end
+    end
+    return nil
+end
+
+-- Get addon metadata (title) from TOC file
+function MO.Utils.GetAddonTitle(addonName)
+    if addonName and C_AddOns and C_AddOns.GetAddOnMetadata then
+        local title = C_AddOns.GetAddOnMetadata(addonName, "Title")
+        if title then
+            -- Strip color codes from title
+            return title:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", "")
+        end
+    end
+    return nil
+end
+
+-- Get a friendly display name for an addon based on its frame name
+function MO.Utils.GetAddonDisplayName(frameName)
+    if not frameName then return "Unknown" end
+
+    -- Method 1: Query LibDBIcon registry (most reliable for modern addons)
+    local ldbName = MO.Utils.GetAddonFromLibDBIcon(frameName)
+    if ldbName then
+        -- Try to get the addon's Title from TOC metadata
+        local title = MO.Utils.GetAddonTitle(ldbName)
+        if title then
+            return title
+        end
+        return ldbName  -- Fallback to the registered name
+    end
+
+    -- Method 2: Try to extract addon name from frame name and get TOC title
+    local addonGuess = frameName:match("^([^_]+)") or frameName:gsub("MinimapButton$", "")
+    local title = MO.Utils.GetAddonTitle(addonGuess)
+    if title then
+        return title
+    end
+
+    -- Method 3: Clean up the frame name as fallback
+    local cleaned = frameName:gsub("MinimapButton$", "")
+                             :gsub("_MinimapButton$", "")
+                             :gsub("Minimap$", "")
+                             :gsub("_Minimap$", "")
+                             :gsub("Button$", "")
+                             :gsub("_Button$", "")
+                             :gsub("^Lib", "")
+
+    -- Add spaces before capitals: "MyAddon" -> "My Addon"
+    cleaned = cleaned:gsub("(%l)(%u)", "%1 %2")
+
+    -- Remove underscores and extra spaces
+    cleaned = cleaned:gsub("_", " "):gsub("%s+", " ")
+    cleaned = cleaned:match("^%s*(.-)%s*$") or cleaned  -- trim
+
+    if cleaned ~= "" then
+        return cleaned
+    end
+
+    return frameName  -- Fallback to raw name
+end

@@ -80,4 +80,8 @@ read_globals = {
     "pcall",
     "xpcall",
     "_G",
+
+    -- WoW API
+    "C_AddOns",
+    "LibStub",
 }

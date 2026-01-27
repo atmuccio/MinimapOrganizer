@@ -255,6 +255,10 @@ function ButtonManager:GetSortedButtons(filterCategory)
 
         -- Then by sort method
         if MO.db.sortMethod == "category" then
+            -- Uncategorized always last
+            if a.category == "Uncategorized" and b.category ~= "Uncategorized" then return false end
+            if b.category == "Uncategorized" and a.category ~= "Uncategorized" then return true end
+
             if a.categoryOrder ~= b.categoryOrder then
                 return a.categoryOrder < b.categoryOrder
             end
@@ -264,10 +268,40 @@ function ButtonManager:GetSortedButtons(filterCategory)
         return a.name < b.name
     end)
 
-    return buttons
+    -- Calculate category breaks for "All" view with category sorting
+    local categoryBreaks = {}
+    if (not filterCategory or filterCategory == "All") and MO.db.sortMethod == "category" then
+        local lastCategory = nil
+        local inFavorites = false
+
+        for i, btnData in ipairs(buttons) do
+            -- Handle favorites section when showFavoritesFirst is enabled
+            if MO.db.showFavoritesFirst and btnData.isFavorite then
+                if not inFavorites then
+                    -- First favorite - start Favorites section
+                    categoryBreaks[i] = MO.L.FAVORITES or "Favorites"
+                    inFavorites = true
+                    lastCategory = nil  -- Reset so we detect category change after favorites
+                end
+            else
+                -- Not a favorite (or showFavoritesFirst is off)
+                if inFavorites then
+                    -- Transitioning from favorites to regular categories
+                    inFavorites = false
+                    categoryBreaks[i] = btnData.category
+                    lastCategory = btnData.category
+                elseif btnData.category ~= lastCategory then
+                    categoryBreaks[i] = btnData.category
+                    lastCategory = btnData.category
+                end
+            end
+        end
+    end
+
+    return buttons, categoryBreaks
 end
 
--- Get list of all categories (sorted by order)
+-- Get list of all categories (sorted by order, Uncategorized always last)
 function ButtonManager:GetCategories()
     local categories = {}
 
@@ -280,8 +314,64 @@ function ButtonManager:GetCategories()
     end
 
     table.sort(categories, function(a, b)
+        -- Uncategorized always last
+        if a.name == "Uncategorized" then return false end
+        if b.name == "Uncategorized" then return true end
         return a.order < b.order
     end)
 
     return categories
+end
+
+-- Move a category up in the order
+function ButtonManager:MoveCategoryUp(name)
+    -- Can't move Uncategorized
+    if name == "Uncategorized" then return false end
+
+    local categories = self:GetCategories()
+    for i, cat in ipairs(categories) do
+        if cat.name == name and i > 1 then
+            local prevCat = categories[i - 1]
+            local tempOrder = MO.db.categories[name].order
+            MO.db.categories[name].order = MO.db.categories[prevCat.name].order
+            MO.db.categories[prevCat.name].order = tempOrder
+            return true
+        end
+    end
+    return false
+end
+
+-- Move a category down in the order
+function ButtonManager:MoveCategoryDown(name)
+    -- Can't move Uncategorized
+    if name == "Uncategorized" then return false end
+
+    local categories = self:GetCategories()
+    for i, cat in ipairs(categories) do
+        if cat.name == name and i < #categories then
+            local nextCat = categories[i + 1]
+            -- Can't move below Uncategorized
+            if nextCat.name == "Uncategorized" then return false end
+
+            local tempOrder = MO.db.categories[name].order
+            MO.db.categories[name].order = MO.db.categories[nextCat.name].order
+            MO.db.categories[nextCat.name].order = tempOrder
+            return true
+        end
+    end
+    return false
+end
+
+-- Remove a button from the exclusion list
+function ButtonManager:RemoveExclusion(name)
+    if MO.db.excludedButtons[name] then
+        MO.db.excludedButtons[name] = nil
+        -- Auto-collect if enabled and frame exists
+        local frame = _G[name]
+        if frame and frame._mo and MO.db.autoCollect then
+            self:CollectButton(name)
+        end
+        return true
+    end
+    return false
 end

@@ -6,6 +6,8 @@ local CollectionWindow = MO.CollectionWindow
 local mainWindow = nil
 local buttonSlots = {}
 local categoryFilter = "All"
+local headerFrames = {}
+local HEADER_HEIGHT = 20
 
 -- Backdrop definition
 local WINDOW_BACKDROP = {
@@ -42,11 +44,21 @@ function CollectionWindow:CreateWindow()
     -- Register for escape to close
     tinsert(UISpecialFrames, "MinimapOrganizer_CollectionWindow")
 
-    -- Title bar (for dragging)
-    local titleBar = CreateFrame("Frame", nil, mainWindow)
+    -- Title bar with backdrop
+    local titleBar = CreateFrame("Frame", nil, mainWindow, "BackdropTemplate")
     titleBar:SetHeight(24)
     titleBar:SetPoint("TOPLEFT", 12, -8)
     titleBar:SetPoint("TOPRIGHT", -28, -8)
+    titleBar:SetBackdrop({
+        bgFile = "Interface\\Buttons\\WHITE8X8",
+        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+        tile = true,
+        tileSize = 8,
+        edgeSize = 12,
+        insets = { left = 2, right = 2, top = 2, bottom = 2 },
+    })
+    titleBar:SetBackdropColor(0.1, 0.1, 0.1, 0.8)
+    titleBar:SetBackdropBorderColor(0.3, 0.3, 0.3, 1)
     titleBar:EnableMouse(true)
     titleBar:RegisterForDrag("LeftButton")
 
@@ -59,15 +71,16 @@ function CollectionWindow:CreateWindow()
         CollectionWindow:SavePosition()
     end)
 
-    -- Title text
-    local title = mainWindow:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    title:SetPoint("TOPLEFT", 16, -12)
+    -- Title text (centered in bar)
+    local title = titleBar:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    title:SetPoint("LEFT", titleBar, "LEFT", 8, 0)
     title:SetText(MO.L.WINDOW_TITLE)
     mainWindow.title = title
+    mainWindow.titleBar = titleBar
 
     -- Close button
     local closeBtn = CreateFrame("Button", nil, mainWindow, "UIPanelCloseButton")
-    closeBtn:SetPoint("TOPRIGHT", -2, -2)
+    closeBtn:SetPoint("TOPRIGHT", mainWindow, "TOPRIGHT", -4, -4)
     closeBtn:SetScript("OnClick", function()
         CollectionWindow:Hide()
     end)
@@ -135,12 +148,46 @@ function CollectionWindow:CreateCategoryDropdown(parent)
     mainWindow.categoryDropdown = dropdown
 end
 
+-- Get or create a category header
+local function GetOrCreateHeader(index, parent)
+    if headerFrames[index] then
+        return headerFrames[index]
+    end
+
+    local header = CreateFrame("Frame", nil, parent)
+    header:SetHeight(HEADER_HEIGHT)
+
+    -- Left line
+    local leftLine = header:CreateTexture(nil, "ARTWORK")
+    leftLine:SetHeight(1)
+    leftLine:SetPoint("LEFT", 4, 0)
+    leftLine:SetPoint("RIGHT", header, "CENTER", -30, 0)
+    leftLine:SetColorTexture(0.4, 0.4, 0.4, 0.6)
+    header.leftLine = leftLine
+
+    -- Category name
+    local text = header:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    text:SetPoint("CENTER", 0, 0)
+    header.text = text
+
+    -- Right line
+    local rightLine = header:CreateTexture(nil, "ARTWORK")
+    rightLine:SetHeight(1)
+    rightLine:SetPoint("LEFT", header, "CENTER", 30, 0)
+    rightLine:SetPoint("RIGHT", -4, 0)
+    rightLine:SetColorTexture(0.4, 0.4, 0.4, 0.6)
+    header.rightLine = rightLine
+
+    headerFrames[index] = header
+    return header
+end
+
 -- Refresh the button layout
 function CollectionWindow:RefreshLayout()
     if not mainWindow or not mainWindow:IsShown() then return end
 
     local opts = MO.db.window
-    local buttons = MO.ButtonManager:GetSortedButtons(categoryFilter)
+    local buttons, categoryBreaks = MO.ButtonManager:GetSortedButtons(categoryFilter)
     local content = mainWindow.content
 
     -- Hide all existing slots first
@@ -153,42 +200,109 @@ function CollectionWindow:RefreshLayout()
         end
     end
 
+    -- Hide all headers
+    for _, header in pairs(headerFrames) do
+        header:Hide()
+    end
+
     -- Calculate layout
     local perRow = opts.buttonsPerRow
     local size = opts.buttonSize
     local spacing = opts.buttonSpacing
+    local showHeaders = (categoryFilter == "All") and (MO.db.sortMethod == "category") and next(categoryBreaks)
 
     local buttonCount = #buttons
-    local rows = math.max(1, math.ceil(buttonCount / perRow))
     local cols = math.min(buttonCount, perRow)
 
-    -- Calculate window size
+    -- Calculate content width
     local contentWidth = cols * (size + spacing) - spacing
-    local contentHeight = rows * (size + spacing) - spacing
-
-    -- Minimum sizes
     contentWidth = math.max(contentWidth, 150)
-    contentHeight = math.max(contentHeight, size)
 
-    -- Set window size (add padding for title, borders)
-    local windowWidth = contentWidth + 32
-    local windowHeight = contentHeight + 72  -- Title + dropdown + padding
+    if showHeaders then
+        -- Calculate positions accounting for headers
+        local yOffset = 0
+        local headerCount = 0
+        local buttonIndex = 0
 
-    mainWindow:SetSize(windowWidth, windowHeight)
+        for i, btnData in ipairs(buttons) do
+            -- Insert header if needed
+            if categoryBreaks[i] then
+                -- Close out previous category - add height for all rows used
+                if buttonIndex > 0 then
+                    local rowsUsed = math.ceil(buttonIndex / perRow)
+                    yOffset = yOffset + rowsUsed * (size + spacing)
+                end
 
-    -- Position each button
-    for i, btnData in ipairs(buttons) do
-        local slot = self:GetOrCreateSlot(i)
-        local row = math.floor((i - 1) / perRow)
-        local col = (i - 1) % perRow
+                headerCount = headerCount + 1
+                local header = GetOrCreateHeader(headerCount, content)
+                header:SetWidth(contentWidth)
+                header:SetPoint("TOPLEFT", content, "TOPLEFT", 0, -yOffset)
+                header.text:SetText(categoryBreaks[i])
 
-        slot:SetSize(size, size)
-        slot:SetPoint("TOPLEFT", content, "TOPLEFT",
-            col * (size + spacing),
-            -row * (size + spacing))
+                local catData = MO.db.categories[categoryBreaks[i]]
+                if catData and catData.color then
+                    header.text:SetTextColor(catData.color[1], catData.color[2], catData.color[3])
+                else
+                    header.text:SetTextColor(0.8, 0.8, 0.8)
+                end
 
-        self:SetupSlot(slot, btnData)
-        slot:Show()
+                header:Show()
+                yOffset = yOffset + HEADER_HEIGHT + 4
+                buttonIndex = 0  -- Reset for new category
+            end
+
+            -- Position button
+            local slot = self:GetOrCreateSlot(i)
+            local col = buttonIndex % perRow
+            local rowOffset = math.floor(buttonIndex / perRow) * (size + spacing)
+
+            slot:SetSize(size, size)
+            slot:SetPoint("TOPLEFT", content, "TOPLEFT",
+                col * (size + spacing),
+                -(yOffset + rowOffset))
+
+            self:SetupSlot(slot, btnData)
+            slot:Show()
+            buttonIndex = buttonIndex + 1
+        end
+
+        -- Calculate total height - include last category's rows
+        local lastCategoryRows = math.max(1, math.ceil(buttonIndex / perRow))
+        local contentHeight = yOffset + lastCategoryRows * (size + spacing) - spacing
+        contentHeight = math.max(contentHeight, size)
+
+        -- Set window size
+        local windowWidth = contentWidth + 32
+        local windowHeight = contentHeight + 72
+        mainWindow:SetSize(windowWidth, windowHeight)
+    else
+        -- Standard layout without headers
+        local rows = math.max(1, math.ceil(buttonCount / perRow))
+
+        -- Calculate window size
+        local contentHeight = rows * (size + spacing) - spacing
+        contentHeight = math.max(contentHeight, size)
+
+        -- Set window size (add padding for title, borders)
+        local windowWidth = contentWidth + 32
+        local windowHeight = contentHeight + 72  -- Title + dropdown + padding
+
+        mainWindow:SetSize(windowWidth, windowHeight)
+
+        -- Position each button
+        for i, btnData in ipairs(buttons) do
+            local slot = self:GetOrCreateSlot(i)
+            local row = math.floor((i - 1) / perRow)
+            local col = (i - 1) % perRow
+
+            slot:SetSize(size, size)
+            slot:SetPoint("TOPLEFT", content, "TOPLEFT",
+                col * (size + spacing),
+                -row * (size + spacing))
+
+            self:SetupSlot(slot, btnData)
+            slot:Show()
+        end
     end
 end
 
@@ -229,7 +343,16 @@ function CollectionWindow:GetOrCreateSlot(index)
     slot:SetScript("OnEnter", function(self)
         if self.buttonData then
             GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-            GameTooltip:AddLine(self.buttonData.name, 1, 1, 1)
+
+            -- Show friendly addon name
+            local displayName = MO.Utils.GetAddonDisplayName(self.buttonData.name)
+            GameTooltip:AddLine(displayName, 1, 1, 1)
+
+            -- Show raw frame name in smaller gray text if different
+            if displayName ~= self.buttonData.name then
+                GameTooltip:AddLine(self.buttonData.name, 0.5, 0.5, 0.5)
+            end
+
             GameTooltip:AddLine(MO.L.CATEGORY .. ": " .. self.buttonData.category, 0.7, 0.7, 0.7)
             if self.buttonData.isFavorite then
                 GameTooltip:AddLine(MO.L.FAVORITE, 1, 0.84, 0)
@@ -372,7 +495,7 @@ function CollectionWindow:ShowContextMenu(slot)
 end
 
 -- Show dialog to create new category
-function CollectionWindow:ShowNewCategoryDialog(buttonName)
+function CollectionWindow:ShowNewCategoryDialog(buttonName, onComplete)
     StaticPopupDialogs["MINIMAPORGANIZER_NEW_CATEGORY"] = {
         text = MO.L.DIALOG_NEW_CATEGORY_TEXT,
         button1 = MO.L.DIALOG_ACCEPT,
@@ -385,6 +508,9 @@ function CollectionWindow:ShowNewCategoryDialog(buttonName)
                 MO.ButtonManager:CreateCategory(name)
                 if buttonName then
                     MO.ButtonManager:SetCategory(buttonName, name)
+                end
+                if onComplete then
+                    onComplete()
                 end
             end
         end,
@@ -399,6 +525,9 @@ function CollectionWindow:ShowNewCategoryDialog(buttonName)
                 MO.ButtonManager:CreateCategory(name)
                 if buttonName then
                     MO.ButtonManager:SetCategory(buttonName, name)
+                end
+                if onComplete then
+                    onComplete()
                 end
             end
             parent:Hide()

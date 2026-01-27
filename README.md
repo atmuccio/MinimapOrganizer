@@ -5,11 +5,13 @@ A World of Warcraft addon that collects minimap buttons into a clean, organized 
 ## Features
 
 - **Collects minimap buttons** into a movable grid window
-- **Custom categories** - Create, rename, and delete your own categories
+- **Custom categories** - Create, rename, reorder, and delete your own categories
 - **Favorites** - Mark buttons with a star for quick access
 - **Exclude buttons** - Keep specific buttons on the minimap
 - **Auto-collect** - Automatically gather new addon buttons
-- **Configurable layout** - Adjust buttons per row, button size, and window scale
+- **Category headers** - Visual separators when viewing all buttons by category
+- **Smart tooltips** - Shows friendly addon names instead of frame names
+- **Configurable layout** - Adjust buttons per row and window scale
 - **Modern settings** - Full integration with WoW's addon settings panel
 - **MBB migration** - Automatically imports settings from MinimapButtonBag
 
@@ -48,12 +50,13 @@ Access via `/mo settings` or the WoW addon settings panel:
 - **Hide Minimap Button** - Use slash commands only
 - **Lock Minimap Button** - Prevent dragging
 - **Buttons Per Row** - 4 to 16
-- **Button Size** - 24 to 48 pixels
 - **Window Scale** - 0.5x to 2.0x
 - **Close on Click** - Auto-close after clicking a button
 - **Sort Method** - Alphabetical or by category
 - **Auto-Collect** - Automatically bag new buttons
 - **Show Favorites First** - Pin favorites to the top
+- **Manage Categories** - Reorder and delete categories
+- **Manage Exclusions** - View and restore excluded buttons
 
 ## Requirements
 

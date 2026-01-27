@@ -2,7 +2,7 @@
 ## Title: MinimapOrganizer
 ## Notes: Collects minimap buttons into a movable, organized window with categories and favorites
 ## Author: atmuccio
-## Version: 1.0.0
+## Version: 1.1.0
 ## SavedVariablesPerCharacter: MinimapOrganizerDB
 ## IconTexture: Interface\ICONS\Garrison_Building_Storehouse
 ## Category: Map
