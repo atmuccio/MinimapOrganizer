@@ -35,6 +35,17 @@ function ButtonScanner:ScanNow()
     self:ScanMinimapChildren()
 end
 
+-- Check if a frame looks like a map pin (HereBeDragons, etc.)
+function ButtonScanner:IsMapPin(frame)
+    -- HereBeDragons pins: anonymous frame with icon texture
+    if frame.icon and type(frame.icon) == "table" and frame.icon.IsObjectType then
+        if frame.icon:IsObjectType("Texture") and not frame:GetName() then
+            return true
+        end
+    end
+    return false
+end
+
 -- Scan all minimap children for buttons
 function ButtonScanner:ScanMinimapChildren()
     local children = { Minimap:GetChildren() }
@@ -42,7 +53,13 @@ function ButtonScanner:ScanMinimapChildren()
     for _, child in ipairs(children) do
         local name = child:GetName()
 
-        if name and not hookedButtons[name] then
+        -- Skip anonymous frames that look like map pins (TomTom, etc.)
+        if not name then
+            -- Anonymous frame - check if it's a map pin
+            if not self:IsMapPin(child) then
+                -- Not a map pin, but still anonymous - skip it
+            end
+        elseif not hookedButtons[name] then
             -- Check if it's a valid button and not a system button
             if self:IsValidButton(child) and not MO:IsSystemButton(name) then
                 self:HookButton(child)

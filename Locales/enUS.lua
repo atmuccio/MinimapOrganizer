@@ -8,6 +8,7 @@ MO.L = {
     WINDOW_TITLE = "Minimap Buttons",
     CATEGORY = "Category",
     FAVORITE = "Favorite",
+    FAVORITES = "Favorites",
     ALL_CATEGORIES = "All",
     UNCATEGORIZED = "Uncategorized",
 
@@ -64,6 +65,14 @@ MO.L = {
     SETTINGS_MANAGE_CATEGORIES = "Manage Categories",
     SETTINGS_MANAGE_CATEGORIES_DESC = "View, create, and delete custom categories. Buttons in deleted categories will be moved to Uncategorized.",
     BUTTONS = "buttons",
+    MOVE_UP = "Move Up",
+    MOVE_DOWN = "Move Down",
+
+    -- Settings: Exclusion Management
+    SETTINGS_MANAGE_EXCLUSIONS = "Manage Exclusions",
+    SETTINGS_MANAGE_EXCLUSIONS_DESC = "Buttons released to the minimap are listed here. Remove an exclusion to allow the button to be collected again.",
+    RESTORE_BUTTON = "Restore",
+    NO_EXCLUDED_BUTTONS = "No buttons are currently excluded.",
 
     -- Slash commands
     SLASH_USAGE = "Usage: /mo [toggle|settings|reset|debug]",
