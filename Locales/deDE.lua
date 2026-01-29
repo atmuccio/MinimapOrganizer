@@ -1,0 +1,84 @@
+local ADDON_NAME, MO = ...
+
+if GetLocale() ~= "deDE" then return end
+
+-- German translations
+MO.L.ADDON_NAME = "MinimapOrganizer"
+MO.L.WINDOW_TITLE = "Minimap-Schaltflächen"
+MO.L.CATEGORY = "Kategorie"
+MO.L.FAVORITE = "Favorit"
+MO.L.FAVORITES = "Favoriten"
+MO.L.ALL_CATEGORIES = "Alle"
+MO.L.UNCATEGORIZED = "Unkategorisiert"
+
+MO.L.TOOLTIP_LEFTCLICK = "Linksklick zum Öffnen"
+MO.L.TOOLTIP_RIGHTCLICK = "Rechtsklick für Einstellungen"
+MO.L.TOOLTIP_DRAG = "Ziehen zum Verschieben"
+MO.L.TOOLTIP_BUTTON_RIGHTCLICK = "Rechtsklick für Optionen"
+MO.L.TOOLTIP_CTRL_CLICK = "Strg+Klick zum Umschalten des Favoriten"
+
+MO.L.TOGGLE_FAVORITE = "Favorit umschalten"
+MO.L.SET_CATEGORY = "Kategorie festlegen"
+MO.L.RELEASE_TO_MINIMAP = "Zur Minimap freigeben"
+MO.L.NEW_CATEGORY = "Neue Kategorie..."
+MO.L.DELETE_CATEGORY = "Kategorie löschen"
+MO.L.RENAME_CATEGORY = "Kategorie umbenennen"
+
+MO.L.SORT_ALPHABETICAL = "Alphabetisch"
+MO.L.SORT_CATEGORY = "Nach Kategorie"
+
+MO.L.SETTINGS_HEADER_MINIMAP = "Minimap-Schaltfläche"
+MO.L.SETTINGS_HEADER_WINDOW = "Sammlungsfenster"
+MO.L.SETTINGS_HEADER_BEHAVIOR = "Verhalten"
+MO.L.SETTINGS_HEADER_CATEGORIES = "Kategorien"
+
+MO.L.SETTINGS_HIDE_MINIMAP_BUTTON = "Minimap-Schaltfläche ausblenden"
+MO.L.SETTINGS_HIDE_MINIMAP_BUTTON_TOOLTIP = "Blendet die Minimap-Schaltfläche aus. Verwende /mo zum Umschalten des Fensters."
+MO.L.SETTINGS_LOCK_MINIMAP_BUTTON = "Minimap-Schaltfläche sperren"
+MO.L.SETTINGS_LOCK_MINIMAP_BUTTON_TOOLTIP = "Verhindert das Ziehen der Minimap-Schaltfläche."
+
+MO.L.SETTINGS_BUTTONS_PER_ROW = "Schaltflächen pro Reihe"
+MO.L.SETTINGS_BUTTONS_PER_ROW_TOOLTIP = "Anzahl der Schaltflächen pro Reihe."
+MO.L.SETTINGS_BUTTON_SIZE = "Schaltflächengröße"
+MO.L.SETTINGS_BUTTON_SIZE_TOOLTIP = "Größe der Schaltflächen in Pixeln."
+MO.L.SETTINGS_WINDOW_SCALE = "Fensterskalierung"
+MO.L.SETTINGS_WINDOW_SCALE_TOOLTIP = "Skalierung des Sammlungsfensters."
+MO.L.SETTINGS_CLOSE_ON_CLICK = "Fenster nach Klick schließen"
+MO.L.SETTINGS_CLOSE_ON_CLICK_TOOLTIP = "Schließt das Fenster nach dem Klicken auf eine Schaltfläche."
+MO.L.SETTINGS_SORT_METHOD = "Sortiermethode"
+MO.L.SETTINGS_SORT_METHOD_TOOLTIP = "Wie Schaltflächen in der Sammlung sortiert werden."
+
+MO.L.SETTINGS_AUTO_COLLECT = "Neue Schaltflächen automatisch sammeln"
+MO.L.SETTINGS_AUTO_COLLECT_TOOLTIP = "Sammelt automatisch neu erkannte Minimap-Schaltflächen."
+MO.L.SETTINGS_SHOW_FAVORITES_FIRST = "Favoriten zuerst anzeigen"
+MO.L.SETTINGS_SHOW_FAVORITES_FIRST_TOOLTIP = "Zeigt Favoriten immer oben an."
+
+MO.L.SETTINGS_MANAGE_CATEGORIES = "Kategorien verwalten"
+MO.L.SETTINGS_MANAGE_CATEGORIES_DESC = "Benutzerdefinierte Kategorien anzeigen, erstellen und löschen. Schaltflächen in gelöschten Kategorien werden zu Unkategorisiert verschoben."
+MO.L.BUTTONS = "Schaltflächen"
+MO.L.MOVE_UP = "Nach oben"
+MO.L.MOVE_DOWN = "Nach unten"
+
+MO.L.SETTINGS_MANAGE_EXCLUSIONS = "Ausschlüsse verwalten"
+MO.L.SETTINGS_MANAGE_EXCLUSIONS_DESC = "Zur Minimap freigegebene Schaltflächen werden hier aufgelistet. Entferne einen Ausschluss, um die Schaltfläche wieder sammelbar zu machen."
+MO.L.RESTORE_BUTTON = "Wiederherstellen"
+MO.L.NO_EXCLUDED_BUTTONS = "Keine Schaltflächen sind derzeit ausgeschlossen."
+
+MO.L.SLASH_USAGE = "Verwendung: /mo [toggle|settings|reset|debug]"
+MO.L.SLASH_RESET_DONE = "Fensterposition zurückgesetzt."
+MO.L.SLASH_DEBUG_ON = "Debug-Modus aktiviert."
+MO.L.SLASH_DEBUG_OFF = "Debug-Modus deaktiviert."
+
+MO.L.DIALOG_NEW_CATEGORY_TITLE = "Neue Kategorie"
+MO.L.DIALOG_NEW_CATEGORY_TEXT = "Name für die neue Kategorie eingeben:"
+MO.L.DIALOG_RENAME_CATEGORY_TITLE = "Kategorie umbenennen"
+MO.L.DIALOG_RENAME_CATEGORY_TEXT = "Neuen Namen eingeben:"
+MO.L.DIALOG_DELETE_CATEGORY_CONFIRM = "Möchtest du '%s' wirklich löschen? Schaltflächen werden zu Unkategorisiert verschoben."
+MO.L.DIALOG_ACCEPT = "Akzeptieren"
+MO.L.DIALOG_CANCEL = "Abbrechen"
+
+MO.L.MSG_BUTTON_COLLECTED = "Gesammelt: %s"
+MO.L.MSG_BUTTON_RELEASED = "Freigegeben: %s"
+MO.L.MSG_CATEGORY_CREATED = "Kategorie erstellt: %s"
+MO.L.MSG_CATEGORY_DELETED = "Kategorie gelöscht: %s"
+MO.L.MSG_MIGRATED_FROM_MBB = "Einstellungen von MBB-Addon migriert."

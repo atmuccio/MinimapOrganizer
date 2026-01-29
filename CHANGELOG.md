@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.2.0] - Localization & Polish
+
+### Added
+- **Localization Support** - Added locale files for German, Spanish (ES/MX), French, Italian, Korean, Portuguese (BR), Russian, and Chinese (Simplified/Traditional)
+
+### Changed
+- Improved collection window layout with better spacing and alignment
+- Category filter dropdown is now left-aligned with proper padding
+- Title bar and close button are now properly aligned
+- Category header divider lines now dynamically adjust to text width
+
 ## [1.1.0] - UI Enhancements
 
 ### Added

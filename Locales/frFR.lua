@@ -1,0 +1,84 @@
+local ADDON_NAME, MO = ...
+
+if GetLocale() ~= "frFR" then return end
+
+-- French translations
+MO.L.ADDON_NAME = "MinimapOrganizer"
+MO.L.WINDOW_TITLE = "Boutons de la minicarte"
+MO.L.CATEGORY = "Catégorie"
+MO.L.FAVORITE = "Favori"
+MO.L.FAVORITES = "Favoris"
+MO.L.ALL_CATEGORIES = "Toutes"
+MO.L.UNCATEGORIZED = "Non classé"
+
+MO.L.TOOLTIP_LEFTCLICK = "Clic gauche pour ouvrir"
+MO.L.TOOLTIP_RIGHTCLICK = "Clic droit pour les paramètres"
+MO.L.TOOLTIP_DRAG = "Glisser pour déplacer"
+MO.L.TOOLTIP_BUTTON_RIGHTCLICK = "Clic droit pour les options"
+MO.L.TOOLTIP_CTRL_CLICK = "Ctrl+Clic pour basculer le favori"
+
+MO.L.TOGGLE_FAVORITE = "Basculer le favori"
+MO.L.SET_CATEGORY = "Définir la catégorie"
+MO.L.RELEASE_TO_MINIMAP = "Libérer vers la minicarte"
+MO.L.NEW_CATEGORY = "Nouvelle catégorie..."
+MO.L.DELETE_CATEGORY = "Supprimer la catégorie"
+MO.L.RENAME_CATEGORY = "Renommer la catégorie"
+
+MO.L.SORT_ALPHABETICAL = "Alphabétique"
+MO.L.SORT_CATEGORY = "Par catégorie"
+
+MO.L.SETTINGS_HEADER_MINIMAP = "Bouton de la minicarte"
+MO.L.SETTINGS_HEADER_WINDOW = "Fenêtre de collection"
+MO.L.SETTINGS_HEADER_BEHAVIOR = "Comportement"
+MO.L.SETTINGS_HEADER_CATEGORIES = "Catégories"
+
+MO.L.SETTINGS_HIDE_MINIMAP_BUTTON = "Masquer le bouton de la minicarte"
+MO.L.SETTINGS_HIDE_MINIMAP_BUTTON_TOOLTIP = "Masque le bouton de la minicarte. Utilisez /mo pour basculer la fenêtre."
+MO.L.SETTINGS_LOCK_MINIMAP_BUTTON = "Verrouiller la position du bouton"
+MO.L.SETTINGS_LOCK_MINIMAP_BUTTON_TOOLTIP = "Empêche le déplacement du bouton de la minicarte."
+
+MO.L.SETTINGS_BUTTONS_PER_ROW = "Boutons par ligne"
+MO.L.SETTINGS_BUTTONS_PER_ROW_TOOLTIP = "Nombre de boutons à afficher par ligne."
+MO.L.SETTINGS_BUTTON_SIZE = "Taille des boutons"
+MO.L.SETTINGS_BUTTON_SIZE_TOOLTIP = "Taille des boutons en pixels."
+MO.L.SETTINGS_WINDOW_SCALE = "Échelle de la fenêtre"
+MO.L.SETTINGS_WINDOW_SCALE_TOOLTIP = "Échelle de la fenêtre de collection."
+MO.L.SETTINGS_CLOSE_ON_CLICK = "Fermer la fenêtre après un clic"
+MO.L.SETTINGS_CLOSE_ON_CLICK_TOOLTIP = "Ferme la fenêtre après avoir cliqué sur un bouton."
+MO.L.SETTINGS_SORT_METHOD = "Méthode de tri"
+MO.L.SETTINGS_SORT_METHOD_TOOLTIP = "Comment trier les boutons dans la collection."
+
+MO.L.SETTINGS_AUTO_COLLECT = "Collecter automatiquement les nouveaux boutons"
+MO.L.SETTINGS_AUTO_COLLECT_TOOLTIP = "Collecte automatiquement les boutons de minicarte détectés."
+MO.L.SETTINGS_SHOW_FAVORITES_FIRST = "Afficher les favoris en premier"
+MO.L.SETTINGS_SHOW_FAVORITES_FIRST_TOOLTIP = "Affiche toujours les boutons favoris en haut."
+
+MO.L.SETTINGS_MANAGE_CATEGORIES = "Gérer les catégories"
+MO.L.SETTINGS_MANAGE_CATEGORIES_DESC = "Afficher, créer et supprimer des catégories personnalisées. Les boutons des catégories supprimées seront déplacés vers Non classé."
+MO.L.BUTTONS = "boutons"
+MO.L.MOVE_UP = "Monter"
+MO.L.MOVE_DOWN = "Descendre"
+
+MO.L.SETTINGS_MANAGE_EXCLUSIONS = "Gérer les exclusions"
+MO.L.SETTINGS_MANAGE_EXCLUSIONS_DESC = "Les boutons libérés vers la minicarte sont listés ici. Supprimez une exclusion pour permettre au bouton d'être collecté à nouveau."
+MO.L.RESTORE_BUTTON = "Restaurer"
+MO.L.NO_EXCLUDED_BUTTONS = "Aucun bouton n'est actuellement exclu."
+
+MO.L.SLASH_USAGE = "Utilisation : /mo [toggle|settings|reset|debug]"
+MO.L.SLASH_RESET_DONE = "Position de la fenêtre réinitialisée."
+MO.L.SLASH_DEBUG_ON = "Mode débogage activé."
+MO.L.SLASH_DEBUG_OFF = "Mode débogage désactivé."
+
+MO.L.DIALOG_NEW_CATEGORY_TITLE = "Nouvelle catégorie"
+MO.L.DIALOG_NEW_CATEGORY_TEXT = "Entrez un nom pour la nouvelle catégorie :"
+MO.L.DIALOG_RENAME_CATEGORY_TITLE = "Renommer la catégorie"
+MO.L.DIALOG_RENAME_CATEGORY_TEXT = "Entrez le nouveau nom :"
+MO.L.DIALOG_DELETE_CATEGORY_CONFIRM = "Êtes-vous sûr de vouloir supprimer '%s' ? Les boutons seront déplacés vers Non classé."
+MO.L.DIALOG_ACCEPT = "Accepter"
+MO.L.DIALOG_CANCEL = "Annuler"
+
+MO.L.MSG_BUTTON_COLLECTED = "Collecté : %s"
+MO.L.MSG_BUTTON_RELEASED = "Libéré : %s"
+MO.L.MSG_CATEGORY_CREATED = "Catégorie créée : %s"
+MO.L.MSG_CATEGORY_DELETED = "Catégorie supprimée : %s"
+MO.L.MSG_MIGRATED_FROM_MBB = "Paramètres migrés depuis l'addon MBB."

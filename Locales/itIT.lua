@@ -1,0 +1,84 @@
+local ADDON_NAME, MO = ...
+
+if GetLocale() ~= "itIT" then return end
+
+-- Italian translations
+MO.L.ADDON_NAME = "MinimapOrganizer"
+MO.L.WINDOW_TITLE = "Pulsanti minimappa"
+MO.L.CATEGORY = "Categoria"
+MO.L.FAVORITE = "Preferito"
+MO.L.FAVORITES = "Preferiti"
+MO.L.ALL_CATEGORIES = "Tutte"
+MO.L.UNCATEGORIZED = "Senza categoria"
+
+MO.L.TOOLTIP_LEFTCLICK = "Clic sinistro per aprire"
+MO.L.TOOLTIP_RIGHTCLICK = "Clic destro per le impostazioni"
+MO.L.TOOLTIP_DRAG = "Trascina per spostare"
+MO.L.TOOLTIP_BUTTON_RIGHTCLICK = "Clic destro per le opzioni"
+MO.L.TOOLTIP_CTRL_CLICK = "Ctrl+Clic per alternare preferito"
+
+MO.L.TOGGLE_FAVORITE = "Alterna preferito"
+MO.L.SET_CATEGORY = "Imposta categoria"
+MO.L.RELEASE_TO_MINIMAP = "Rilascia sulla minimappa"
+MO.L.NEW_CATEGORY = "Nuova categoria..."
+MO.L.DELETE_CATEGORY = "Elimina categoria"
+MO.L.RENAME_CATEGORY = "Rinomina categoria"
+
+MO.L.SORT_ALPHABETICAL = "Alfabetico"
+MO.L.SORT_CATEGORY = "Per categoria"
+
+MO.L.SETTINGS_HEADER_MINIMAP = "Pulsante minimappa"
+MO.L.SETTINGS_HEADER_WINDOW = "Finestra collezione"
+MO.L.SETTINGS_HEADER_BEHAVIOR = "Comportamento"
+MO.L.SETTINGS_HEADER_CATEGORIES = "Categorie"
+
+MO.L.SETTINGS_HIDE_MINIMAP_BUTTON = "Nascondi pulsante minimappa"
+MO.L.SETTINGS_HIDE_MINIMAP_BUTTON_TOOLTIP = "Nasconde il pulsante della minimappa. Usa /mo per alternare la finestra."
+MO.L.SETTINGS_LOCK_MINIMAP_BUTTON = "Blocca posizione pulsante"
+MO.L.SETTINGS_LOCK_MINIMAP_BUTTON_TOOLTIP = "Impedisce il trascinamento del pulsante della minimappa."
+
+MO.L.SETTINGS_BUTTONS_PER_ROW = "Pulsanti per riga"
+MO.L.SETTINGS_BUTTONS_PER_ROW_TOOLTIP = "Numero di pulsanti da mostrare per riga."
+MO.L.SETTINGS_BUTTON_SIZE = "Dimensione pulsanti"
+MO.L.SETTINGS_BUTTON_SIZE_TOOLTIP = "Dimensione dei pulsanti in pixel."
+MO.L.SETTINGS_WINDOW_SCALE = "Scala finestra"
+MO.L.SETTINGS_WINDOW_SCALE_TOOLTIP = "Scala della finestra di collezione."
+MO.L.SETTINGS_CLOSE_ON_CLICK = "Chiudi finestra dopo il clic"
+MO.L.SETTINGS_CLOSE_ON_CLICK_TOOLTIP = "Chiude la finestra dopo aver cliccato su un pulsante."
+MO.L.SETTINGS_SORT_METHOD = "Metodo di ordinamento"
+MO.L.SETTINGS_SORT_METHOD_TOOLTIP = "Come ordinare i pulsanti nella collezione."
+
+MO.L.SETTINGS_AUTO_COLLECT = "Raccogli automaticamente nuovi pulsanti"
+MO.L.SETTINGS_AUTO_COLLECT_TOOLTIP = "Raccoglie automaticamente i pulsanti minimappa rilevati."
+MO.L.SETTINGS_SHOW_FAVORITES_FIRST = "Mostra preferiti per primi"
+MO.L.SETTINGS_SHOW_FAVORITES_FIRST_TOOLTIP = "Mostra sempre i pulsanti preferiti in alto."
+
+MO.L.SETTINGS_MANAGE_CATEGORIES = "Gestisci categorie"
+MO.L.SETTINGS_MANAGE_CATEGORIES_DESC = "Visualizza, crea ed elimina categorie personalizzate. I pulsanti nelle categorie eliminate verranno spostati in Senza categoria."
+MO.L.BUTTONS = "pulsanti"
+MO.L.MOVE_UP = "Sposta su"
+MO.L.MOVE_DOWN = "Sposta giù"
+
+MO.L.SETTINGS_MANAGE_EXCLUSIONS = "Gestisci esclusioni"
+MO.L.SETTINGS_MANAGE_EXCLUSIONS_DESC = "I pulsanti rilasciati sulla minimappa sono elencati qui. Rimuovi un'esclusione per permettere al pulsante di essere raccolto di nuovo."
+MO.L.RESTORE_BUTTON = "Ripristina"
+MO.L.NO_EXCLUDED_BUTTONS = "Nessun pulsante è attualmente escluso."
+
+MO.L.SLASH_USAGE = "Uso: /mo [toggle|settings|reset|debug]"
+MO.L.SLASH_RESET_DONE = "Posizione finestra ripristinata."
+MO.L.SLASH_DEBUG_ON = "Modalità debug attivata."
+MO.L.SLASH_DEBUG_OFF = "Modalità debug disattivata."
+
+MO.L.DIALOG_NEW_CATEGORY_TITLE = "Nuova categoria"
+MO.L.DIALOG_NEW_CATEGORY_TEXT = "Inserisci un nome per la nuova categoria:"
+MO.L.DIALOG_RENAME_CATEGORY_TITLE = "Rinomina categoria"
+MO.L.DIALOG_RENAME_CATEGORY_TEXT = "Inserisci il nuovo nome:"
+MO.L.DIALOG_DELETE_CATEGORY_CONFIRM = "Sei sicuro di voler eliminare '%s'? I pulsanti verranno spostati in Senza categoria."
+MO.L.DIALOG_ACCEPT = "Accetta"
+MO.L.DIALOG_CANCEL = "Annulla"
+
+MO.L.MSG_BUTTON_COLLECTED = "Raccolto: %s"
+MO.L.MSG_BUTTON_RELEASED = "Rilasciato: %s"
+MO.L.MSG_CATEGORY_CREATED = "Categoria creata: %s"
+MO.L.MSG_CATEGORY_DELETED = "Categoria eliminata: %s"
+MO.L.MSG_MIGRATED_FROM_MBB = "Impostazioni migrate dall'addon MBB."
