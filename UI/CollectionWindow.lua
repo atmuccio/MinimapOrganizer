@@ -47,8 +47,8 @@ function CollectionWindow:CreateWindow()
     -- Title bar with backdrop
     local titleBar = CreateFrame("Frame", nil, mainWindow, "BackdropTemplate")
     titleBar:SetHeight(24)
-    titleBar:SetPoint("TOPLEFT", 12, -8)
-    titleBar:SetPoint("TOPRIGHT", -28, -8)
+    titleBar:SetPoint("TOPLEFT", 7, -6)
+    titleBar:SetPoint("TOPRIGHT", -26, -6)
     titleBar:SetBackdrop({
         bgFile = "Interface\\Buttons\\WHITE8X8",
         edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -80,7 +80,7 @@ function CollectionWindow:CreateWindow()
 
     -- Close button
     local closeBtn = CreateFrame("Button", nil, mainWindow, "UIPanelCloseButton")
-    closeBtn:SetPoint("TOPRIGHT", mainWindow, "TOPRIGHT", -4, -4)
+    closeBtn:SetPoint("TOPRIGHT", mainWindow, "TOPRIGHT", -5, -6)
     closeBtn:SetScript("OnClick", function()
         CollectionWindow:Hide()
     end)
@@ -90,7 +90,7 @@ function CollectionWindow:CreateWindow()
 
     -- Content area (where buttons go)
     local content = CreateFrame("Frame", nil, mainWindow)
-    content:SetPoint("TOPLEFT", 16, -56)
+    content:SetPoint("TOPLEFT", 16, -60)
     content:SetPoint("BOTTOMRIGHT", -16, 16)
     mainWindow.content = content
 
@@ -100,7 +100,7 @@ end
 -- Create category filter dropdown
 function CollectionWindow:CreateCategoryDropdown(parent)
     local dropdown = CreateFrame("Frame", "MinimapOrganizer_CategoryDropdown", parent, "UIDropDownMenuTemplate")
-    dropdown:SetPoint("TOPRIGHT", -24, -28)
+    dropdown:SetPoint("TOPLEFT", 0, -32)
 
     UIDropDownMenu_SetWidth(dropdown, 120)
     UIDropDownMenu_SetText(dropdown, MO.L.ALL_CATEGORIES)
@@ -157,23 +157,23 @@ local function GetOrCreateHeader(index, parent)
     local header = CreateFrame("Frame", nil, parent)
     header:SetHeight(HEADER_HEIGHT)
 
-    -- Left line
-    local leftLine = header:CreateTexture(nil, "ARTWORK")
-    leftLine:SetHeight(1)
-    leftLine:SetPoint("LEFT", 4, 0)
-    leftLine:SetPoint("RIGHT", header, "CENTER", -30, 0)
-    leftLine:SetColorTexture(0.4, 0.4, 0.4, 0.6)
-    header.leftLine = leftLine
-
-    -- Category name
+    -- Category name (create first so lines can anchor to it)
     local text = header:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     text:SetPoint("CENTER", 0, 0)
     header.text = text
 
-    -- Right line
+    -- Left line (anchored to text)
+    local leftLine = header:CreateTexture(nil, "ARTWORK")
+    leftLine:SetHeight(1)
+    leftLine:SetPoint("LEFT", 4, 0)
+    leftLine:SetPoint("RIGHT", text, "LEFT", -8, 0)
+    leftLine:SetColorTexture(0.4, 0.4, 0.4, 0.6)
+    header.leftLine = leftLine
+
+    -- Right line (anchored to text)
     local rightLine = header:CreateTexture(nil, "ARTWORK")
     rightLine:SetHeight(1)
-    rightLine:SetPoint("LEFT", header, "CENTER", 30, 0)
+    rightLine:SetPoint("LEFT", text, "RIGHT", 8, 0)
     rightLine:SetPoint("RIGHT", -4, 0)
     rightLine:SetColorTexture(0.4, 0.4, 0.4, 0.6)
     header.rightLine = rightLine

@@ -2,7 +2,7 @@
 ## Title: MinimapOrganizer
 ## Notes: Collects minimap buttons into a movable, organized window with categories and favorites
 ## Author: atmuccio
-## Version: 1.1.0
+## Version: 1.2.0
 ## SavedVariablesPerCharacter: MinimapOrganizerDB
 ## IconTexture: Interface\ICONS\Garrison_Building_Storehouse
 ## Category: Map
@@ -10,6 +10,16 @@
 
 # Locales
 Locales\enUS.lua
+Locales\deDE.lua
+Locales\esES.lua
+Locales\esMX.lua
+Locales\frFR.lua
+Locales\itIT.lua
+Locales\koKR.lua
+Locales\ptBR.lua
+Locales\ruRU.lua
+Locales\zhCN.lua
+Locales\zhTW.lua
 
 # Core
 Core\Utils.lua

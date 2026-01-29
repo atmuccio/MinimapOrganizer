@@ -1,0 +1,84 @@
+local ADDON_NAME, MO = ...
+
+if GetLocale() ~= "ruRU" then return end
+
+-- Russian translations
+MO.L.ADDON_NAME = "MinimapOrganizer"
+MO.L.WINDOW_TITLE = "Кнопки мини-карты"
+MO.L.CATEGORY = "Категория"
+MO.L.FAVORITE = "Избранное"
+MO.L.FAVORITES = "Избранное"
+MO.L.ALL_CATEGORIES = "Все"
+MO.L.UNCATEGORIZED = "Без категории"
+
+MO.L.TOOLTIP_LEFTCLICK = "ЛКМ, чтобы открыть"
+MO.L.TOOLTIP_RIGHTCLICK = "ПКМ для настроек"
+MO.L.TOOLTIP_DRAG = "Перетащите для перемещения"
+MO.L.TOOLTIP_BUTTON_RIGHTCLICK = "ПКМ для опций"
+MO.L.TOOLTIP_CTRL_CLICK = "Ctrl+клик для переключения избранного"
+
+MO.L.TOGGLE_FAVORITE = "Переключить избранное"
+MO.L.SET_CATEGORY = "Установить категорию"
+MO.L.RELEASE_TO_MINIMAP = "Вернуть на мини-карту"
+MO.L.NEW_CATEGORY = "Новая категория..."
+MO.L.DELETE_CATEGORY = "Удалить категорию"
+MO.L.RENAME_CATEGORY = "Переименовать категорию"
+
+MO.L.SORT_ALPHABETICAL = "По алфавиту"
+MO.L.SORT_CATEGORY = "По категории"
+
+MO.L.SETTINGS_HEADER_MINIMAP = "Кнопка мини-карты"
+MO.L.SETTINGS_HEADER_WINDOW = "Окно коллекции"
+MO.L.SETTINGS_HEADER_BEHAVIOR = "Поведение"
+MO.L.SETTINGS_HEADER_CATEGORIES = "Категории"
+
+MO.L.SETTINGS_HIDE_MINIMAP_BUTTON = "Скрыть кнопку мини-карты"
+MO.L.SETTINGS_HIDE_MINIMAP_BUTTON_TOOLTIP = "Скрывает кнопку мини-карты. Используйте /mo для переключения окна."
+MO.L.SETTINGS_LOCK_MINIMAP_BUTTON = "Заблокировать позицию кнопки"
+MO.L.SETTINGS_LOCK_MINIMAP_BUTTON_TOOLTIP = "Предотвращает перетаскивание кнопки мини-карты."
+
+MO.L.SETTINGS_BUTTONS_PER_ROW = "Кнопок в ряду"
+MO.L.SETTINGS_BUTTONS_PER_ROW_TOOLTIP = "Количество кнопок для отображения в ряду."
+MO.L.SETTINGS_BUTTON_SIZE = "Размер кнопок"
+MO.L.SETTINGS_BUTTON_SIZE_TOOLTIP = "Размер кнопок в пикселях."
+MO.L.SETTINGS_WINDOW_SCALE = "Масштаб окна"
+MO.L.SETTINGS_WINDOW_SCALE_TOOLTIP = "Масштаб окна коллекции."
+MO.L.SETTINGS_CLOSE_ON_CLICK = "Закрывать окно после клика"
+MO.L.SETTINGS_CLOSE_ON_CLICK_TOOLTIP = "Закрывает окно после нажатия на кнопку."
+MO.L.SETTINGS_SORT_METHOD = "Метод сортировки"
+MO.L.SETTINGS_SORT_METHOD_TOOLTIP = "Как сортировать кнопки в коллекции."
+
+MO.L.SETTINGS_AUTO_COLLECT = "Автоматически собирать новые кнопки"
+MO.L.SETTINGS_AUTO_COLLECT_TOOLTIP = "Автоматически собирает обнаруженные кнопки мини-карты."
+MO.L.SETTINGS_SHOW_FAVORITES_FIRST = "Показывать избранное первым"
+MO.L.SETTINGS_SHOW_FAVORITES_FIRST_TOOLTIP = "Всегда отображает избранные кнопки вверху."
+
+MO.L.SETTINGS_MANAGE_CATEGORIES = "Управление категориями"
+MO.L.SETTINGS_MANAGE_CATEGORIES_DESC = "Просмотр, создание и удаление пользовательских категорий. Кнопки в удалённых категориях будут перемещены в Без категории."
+MO.L.BUTTONS = "кнопок"
+MO.L.MOVE_UP = "Вверх"
+MO.L.MOVE_DOWN = "Вниз"
+
+MO.L.SETTINGS_MANAGE_EXCLUSIONS = "Управление исключениями"
+MO.L.SETTINGS_MANAGE_EXCLUSIONS_DESC = "Кнопки, возвращённые на мини-карту, перечислены здесь. Удалите исключение, чтобы кнопка снова могла быть собрана."
+MO.L.RESTORE_BUTTON = "Восстановить"
+MO.L.NO_EXCLUDED_BUTTONS = "В данный момент нет исключённых кнопок."
+
+MO.L.SLASH_USAGE = "Использование: /mo [toggle|settings|reset|debug]"
+MO.L.SLASH_RESET_DONE = "Позиция окна сброшена."
+MO.L.SLASH_DEBUG_ON = "Режим отладки включён."
+MO.L.SLASH_DEBUG_OFF = "Режим отладки выключен."
+
+MO.L.DIALOG_NEW_CATEGORY_TITLE = "Новая категория"
+MO.L.DIALOG_NEW_CATEGORY_TEXT = "Введите название для новой категории:"
+MO.L.DIALOG_RENAME_CATEGORY_TITLE = "Переименовать категорию"
+MO.L.DIALOG_RENAME_CATEGORY_TEXT = "Введите новое название:"
+MO.L.DIALOG_DELETE_CATEGORY_CONFIRM = "Вы уверены, что хотите удалить '%s'? Кнопки будут перемещены в Без категории."
+MO.L.DIALOG_ACCEPT = "Принять"
+MO.L.DIALOG_CANCEL = "Отмена"
+
+MO.L.MSG_BUTTON_COLLECTED = "Собрано: %s"
+MO.L.MSG_BUTTON_RELEASED = "Возвращено: %s"
+MO.L.MSG_CATEGORY_CREATED = "Категория создана: %s"
+MO.L.MSG_CATEGORY_DELETED = "Категория удалена: %s"
+MO.L.MSG_MIGRATED_FROM_MBB = "Настройки перенесены из аддона MBB."

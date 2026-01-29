@@ -1,0 +1,84 @@
+local ADDON_NAME, MO = ...
+
+if GetLocale() ~= "koKR" then return end
+
+-- Korean translations
+MO.L.ADDON_NAME = "MinimapOrganizer"
+MO.L.WINDOW_TITLE = "미니맵 버튼"
+MO.L.CATEGORY = "카테고리"
+MO.L.FAVORITE = "즐겨찾기"
+MO.L.FAVORITES = "즐겨찾기"
+MO.L.ALL_CATEGORIES = "전체"
+MO.L.UNCATEGORIZED = "미분류"
+
+MO.L.TOOLTIP_LEFTCLICK = "좌클릭하여 열기"
+MO.L.TOOLTIP_RIGHTCLICK = "우클릭하여 설정"
+MO.L.TOOLTIP_DRAG = "드래그하여 이동"
+MO.L.TOOLTIP_BUTTON_RIGHTCLICK = "우클릭하여 옵션"
+MO.L.TOOLTIP_CTRL_CLICK = "Ctrl+클릭으로 즐겨찾기 전환"
+
+MO.L.TOGGLE_FAVORITE = "즐겨찾기 전환"
+MO.L.SET_CATEGORY = "카테고리 설정"
+MO.L.RELEASE_TO_MINIMAP = "미니맵으로 복원"
+MO.L.NEW_CATEGORY = "새 카테고리..."
+MO.L.DELETE_CATEGORY = "카테고리 삭제"
+MO.L.RENAME_CATEGORY = "카테고리 이름 변경"
+
+MO.L.SORT_ALPHABETICAL = "가나다순"
+MO.L.SORT_CATEGORY = "카테고리별"
+
+MO.L.SETTINGS_HEADER_MINIMAP = "미니맵 버튼"
+MO.L.SETTINGS_HEADER_WINDOW = "컬렉션 창"
+MO.L.SETTINGS_HEADER_BEHAVIOR = "동작"
+MO.L.SETTINGS_HEADER_CATEGORIES = "카테고리"
+
+MO.L.SETTINGS_HIDE_MINIMAP_BUTTON = "미니맵 버튼 숨기기"
+MO.L.SETTINGS_HIDE_MINIMAP_BUTTON_TOOLTIP = "미니맵 버튼을 숨깁니다. /mo를 사용하여 창을 전환하세요."
+MO.L.SETTINGS_LOCK_MINIMAP_BUTTON = "미니맵 버튼 위치 잠금"
+MO.L.SETTINGS_LOCK_MINIMAP_BUTTON_TOOLTIP = "미니맵 버튼을 드래그할 수 없게 합니다."
+
+MO.L.SETTINGS_BUTTONS_PER_ROW = "행당 버튼 수"
+MO.L.SETTINGS_BUTTONS_PER_ROW_TOOLTIP = "행당 표시할 버튼 수입니다."
+MO.L.SETTINGS_BUTTON_SIZE = "버튼 크기"
+MO.L.SETTINGS_BUTTON_SIZE_TOOLTIP = "버튼 크기(픽셀)입니다."
+MO.L.SETTINGS_WINDOW_SCALE = "창 크기"
+MO.L.SETTINGS_WINDOW_SCALE_TOOLTIP = "컬렉션 창의 크기입니다."
+MO.L.SETTINGS_CLOSE_ON_CLICK = "클릭 후 창 닫기"
+MO.L.SETTINGS_CLOSE_ON_CLICK_TOOLTIP = "버튼을 클릭한 후 창을 닫습니다."
+MO.L.SETTINGS_SORT_METHOD = "정렬 방법"
+MO.L.SETTINGS_SORT_METHOD_TOOLTIP = "컬렉션에서 버튼을 정렬하는 방법입니다."
+
+MO.L.SETTINGS_AUTO_COLLECT = "새 버튼 자동 수집"
+MO.L.SETTINGS_AUTO_COLLECT_TOOLTIP = "새로 감지된 미니맵 버튼을 자동으로 수집합니다."
+MO.L.SETTINGS_SHOW_FAVORITES_FIRST = "즐겨찾기 먼저 표시"
+MO.L.SETTINGS_SHOW_FAVORITES_FIRST_TOOLTIP = "즐겨찾기 버튼을 항상 맨 위에 표시합니다."
+
+MO.L.SETTINGS_MANAGE_CATEGORIES = "카테고리 관리"
+MO.L.SETTINGS_MANAGE_CATEGORIES_DESC = "사용자 정의 카테고리를 보고, 만들고, 삭제합니다. 삭제된 카테고리의 버튼은 미분류로 이동됩니다."
+MO.L.BUTTONS = "버튼"
+MO.L.MOVE_UP = "위로 이동"
+MO.L.MOVE_DOWN = "아래로 이동"
+
+MO.L.SETTINGS_MANAGE_EXCLUSIONS = "제외 관리"
+MO.L.SETTINGS_MANAGE_EXCLUSIONS_DESC = "미니맵으로 복원된 버튼이 여기에 나열됩니다. 제외를 제거하면 버튼을 다시 수집할 수 있습니다."
+MO.L.RESTORE_BUTTON = "복원"
+MO.L.NO_EXCLUDED_BUTTONS = "현재 제외된 버튼이 없습니다."
+
+MO.L.SLASH_USAGE = "사용법: /mo [toggle|settings|reset|debug]"
+MO.L.SLASH_RESET_DONE = "창 위치가 초기화되었습니다."
+MO.L.SLASH_DEBUG_ON = "디버그 모드가 활성화되었습니다."
+MO.L.SLASH_DEBUG_OFF = "디버그 모드가 비활성화되었습니다."
+
+MO.L.DIALOG_NEW_CATEGORY_TITLE = "새 카테고리"
+MO.L.DIALOG_NEW_CATEGORY_TEXT = "새 카테고리의 이름을 입력하세요:"
+MO.L.DIALOG_RENAME_CATEGORY_TITLE = "카테고리 이름 변경"
+MO.L.DIALOG_RENAME_CATEGORY_TEXT = "새 이름을 입력하세요:"
+MO.L.DIALOG_DELETE_CATEGORY_CONFIRM = "'%s'을(를) 삭제하시겠습니까? 버튼은 미분류로 이동됩니다."
+MO.L.DIALOG_ACCEPT = "확인"
+MO.L.DIALOG_CANCEL = "취소"
+
+MO.L.MSG_BUTTON_COLLECTED = "수집됨: %s"
+MO.L.MSG_BUTTON_RELEASED = "복원됨: %s"
+MO.L.MSG_CATEGORY_CREATED = "카테고리 생성됨: %s"
+MO.L.MSG_CATEGORY_DELETED = "카테고리 삭제됨: %s"
+MO.L.MSG_MIGRATED_FROM_MBB = "MBB 애드온에서 설정을 가져왔습니다."

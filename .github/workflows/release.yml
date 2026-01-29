@@ -25,3 +25,14 @@ jobs:
           GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
           # WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
           # WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
+
+      - name: Update CurseForge Description
+        if: ${{ env.CF_API_KEY != '' }}
+        env:
+          CF_API_KEY: ${{ secrets.CF_API_KEY }}
+        run: |
+          curl -X PUT \
+            -H "X-Api-Token: $CF_API_KEY" \
+            -H "Content-Type: text/markdown" \
+            --data-binary @DESCRIPTION.md \
+            "https://wow.curseforge.com/api/projects/1444854/description"

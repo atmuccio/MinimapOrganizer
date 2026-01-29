@@ -1,0 +1,84 @@
+local ADDON_NAME, MO = ...
+
+if GetLocale() ~= "ptBR" then return end
+
+-- Brazilian Portuguese translations
+MO.L.ADDON_NAME = "MinimapOrganizer"
+MO.L.WINDOW_TITLE = "Botões do minimapa"
+MO.L.CATEGORY = "Categoria"
+MO.L.FAVORITE = "Favorito"
+MO.L.FAVORITES = "Favoritos"
+MO.L.ALL_CATEGORIES = "Todas"
+MO.L.UNCATEGORIZED = "Sem categoria"
+
+MO.L.TOOLTIP_LEFTCLICK = "Clique esquerdo para abrir"
+MO.L.TOOLTIP_RIGHTCLICK = "Clique direito para configurações"
+MO.L.TOOLTIP_DRAG = "Arraste para mover"
+MO.L.TOOLTIP_BUTTON_RIGHTCLICK = "Clique direito para opções"
+MO.L.TOOLTIP_CTRL_CLICK = "Ctrl+Clique para alternar favorito"
+
+MO.L.TOGGLE_FAVORITE = "Alternar favorito"
+MO.L.SET_CATEGORY = "Definir categoria"
+MO.L.RELEASE_TO_MINIMAP = "Liberar para o minimapa"
+MO.L.NEW_CATEGORY = "Nova categoria..."
+MO.L.DELETE_CATEGORY = "Excluir categoria"
+MO.L.RENAME_CATEGORY = "Renomear categoria"
+
+MO.L.SORT_ALPHABETICAL = "Alfabética"
+MO.L.SORT_CATEGORY = "Por categoria"
+
+MO.L.SETTINGS_HEADER_MINIMAP = "Botão do minimapa"
+MO.L.SETTINGS_HEADER_WINDOW = "Janela de coleção"
+MO.L.SETTINGS_HEADER_BEHAVIOR = "Comportamento"
+MO.L.SETTINGS_HEADER_CATEGORIES = "Categorias"
+
+MO.L.SETTINGS_HIDE_MINIMAP_BUTTON = "Ocultar botão do minimapa"
+MO.L.SETTINGS_HIDE_MINIMAP_BUTTON_TOOLTIP = "Oculta o botão do minimapa. Use /mo para alternar a janela."
+MO.L.SETTINGS_LOCK_MINIMAP_BUTTON = "Travar posição do botão"
+MO.L.SETTINGS_LOCK_MINIMAP_BUTTON_TOOLTIP = "Impede que o botão do minimapa seja arrastado."
+
+MO.L.SETTINGS_BUTTONS_PER_ROW = "Botões por linha"
+MO.L.SETTINGS_BUTTONS_PER_ROW_TOOLTIP = "Número de botões a exibir por linha."
+MO.L.SETTINGS_BUTTON_SIZE = "Tamanho do botão"
+MO.L.SETTINGS_BUTTON_SIZE_TOOLTIP = "Tamanho dos botões em pixels."
+MO.L.SETTINGS_WINDOW_SCALE = "Escala da janela"
+MO.L.SETTINGS_WINDOW_SCALE_TOOLTIP = "Escala da janela de coleção."
+MO.L.SETTINGS_CLOSE_ON_CLICK = "Fechar janela após clique"
+MO.L.SETTINGS_CLOSE_ON_CLICK_TOOLTIP = "Fecha a janela após clicar em um botão."
+MO.L.SETTINGS_SORT_METHOD = "Método de ordenação"
+MO.L.SETTINGS_SORT_METHOD_TOOLTIP = "Como ordenar os botões na coleção."
+
+MO.L.SETTINGS_AUTO_COLLECT = "Coletar novos botões automaticamente"
+MO.L.SETTINGS_AUTO_COLLECT_TOOLTIP = "Coleta automaticamente botões de minimapa detectados."
+MO.L.SETTINGS_SHOW_FAVORITES_FIRST = "Mostrar favoritos primeiro"
+MO.L.SETTINGS_SHOW_FAVORITES_FIRST_TOOLTIP = "Sempre exibe os botões favoritos no topo."
+
+MO.L.SETTINGS_MANAGE_CATEGORIES = "Gerenciar categorias"
+MO.L.SETTINGS_MANAGE_CATEGORIES_DESC = "Visualize, crie e exclua categorias personalizadas. Botões em categorias excluídas serão movidos para Sem categoria."
+MO.L.BUTTONS = "botões"
+MO.L.MOVE_UP = "Mover para cima"
+MO.L.MOVE_DOWN = "Mover para baixo"
+
+MO.L.SETTINGS_MANAGE_EXCLUSIONS = "Gerenciar exclusões"
+MO.L.SETTINGS_MANAGE_EXCLUSIONS_DESC = "Botões liberados para o minimapa são listados aqui. Remova uma exclusão para permitir que o botão seja coletado novamente."
+MO.L.RESTORE_BUTTON = "Restaurar"
+MO.L.NO_EXCLUDED_BUTTONS = "Nenhum botão está excluído atualmente."
+
+MO.L.SLASH_USAGE = "Uso: /mo [toggle|settings|reset|debug]"
+MO.L.SLASH_RESET_DONE = "Posição da janela redefinida."
+MO.L.SLASH_DEBUG_ON = "Modo de depuração ativado."
+MO.L.SLASH_DEBUG_OFF = "Modo de depuração desativado."
+
+MO.L.DIALOG_NEW_CATEGORY_TITLE = "Nova categoria"
+MO.L.DIALOG_NEW_CATEGORY_TEXT = "Digite um nome para a nova categoria:"
+MO.L.DIALOG_RENAME_CATEGORY_TITLE = "Renomear categoria"
+MO.L.DIALOG_RENAME_CATEGORY_TEXT = "Digite o novo nome:"
+MO.L.DIALOG_DELETE_CATEGORY_CONFIRM = "Tem certeza que deseja excluir '%s'? Os botões serão movidos para Sem categoria."
+MO.L.DIALOG_ACCEPT = "Aceitar"
+MO.L.DIALOG_CANCEL = "Cancelar"
+
+MO.L.MSG_BUTTON_COLLECTED = "Coletado: %s"
+MO.L.MSG_BUTTON_RELEASED = "Liberado: %s"
+MO.L.MSG_CATEGORY_CREATED = "Categoria criada: %s"
+MO.L.MSG_CATEGORY_DELETED = "Categoria excluída: %s"
+MO.L.MSG_MIGRATED_FROM_MBB = "Configurações migradas do addon MBB."
