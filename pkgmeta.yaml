@@ -7,9 +7,12 @@ ignore:
   - .github
   - .gitignore
   - .gitattributes
-  - "*.md"
+  - .claude
+  - .curseforge
   - .luacheckrc
   - .editorconfig
+  - README.md
+  - CHANGELOG.md
 
 manual-changelog:
   filename: CHANGELOG.md
