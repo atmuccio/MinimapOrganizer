@@ -12,6 +12,8 @@ A World of Warcraft addon that collects minimap buttons into a clean, organized 
 - **Category headers** - Visual separators when viewing all buttons by category
 - **Smart tooltips** - Shows friendly addon names instead of frame names
 - **Configurable layout** - Adjust buttons per row and window scale
+- **Theme selection** - Choose from Default, Dark, Transparent, or Minimal themes
+- **Window opacity** - Adjustable background transparency
 - **Modern settings** - Full integration with WoW's addon settings panel
 - **MBB migration** - Automatically imports settings from MinimapButtonBag
 
@@ -51,6 +53,8 @@ Access via `/mo settings` or the WoW addon settings panel:
 - **Lock Minimap Button** - Prevent dragging
 - **Buttons Per Row** - 4 to 16
 - **Window Scale** - 0.5x to 2.0x
+- **Window Opacity** - 30% to 100%
+- **Theme** - Default, Dark, Transparent, or Minimal
 - **Close on Click** - Auto-close after clicking a button
 - **Sort Method** - Alphabetical or by category
 - **Auto-Collect** - Automatically bag new buttons

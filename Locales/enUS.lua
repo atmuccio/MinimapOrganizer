@@ -50,10 +50,20 @@ MO.L = {
     SETTINGS_BUTTON_SIZE_TOOLTIP = "Size of buttons in pixels.",
     SETTINGS_WINDOW_SCALE = "Window Scale",
     SETTINGS_WINDOW_SCALE_TOOLTIP = "Scale of the collection window.",
+    SETTINGS_WINDOW_OPACITY = "Window Opacity",
+    SETTINGS_WINDOW_OPACITY_TOOLTIP = "Transparency of the collection window background.",
+    SETTINGS_THEME = "Theme",
+    SETTINGS_THEME_TOOLTIP = "Visual style of the collection window.",
     SETTINGS_CLOSE_ON_CLICK = "Close Window After Click",
     SETTINGS_CLOSE_ON_CLICK_TOOLTIP = "Close the window after clicking a button.",
     SETTINGS_SORT_METHOD = "Sort Method",
     SETTINGS_SORT_METHOD_TOOLTIP = "How to sort buttons in the collection.",
+
+    -- Themes
+    THEME_DEFAULT = "Default",
+    THEME_DARK = "Dark",
+    THEME_TRANSPARENT = "Transparent",
+    THEME_MINIMAL = "Minimal",
 
     -- Settings: Behavior
     SETTINGS_AUTO_COLLECT = "Auto-Collect New Buttons",

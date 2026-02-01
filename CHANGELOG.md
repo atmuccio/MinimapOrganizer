@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.2.1] - Themes & Customization
+
+### Added
+- **Theme Selection** - Choose from Default, Dark, Transparent, or Minimal themes
+- **Window Opacity** - Adjustable window background opacity (30%-100%)
+
+### Fixed
+- Icons now render correctly across all themes (fixed frame strata/level for LibDBIcon buttons)
+
 ## [1.2.0] - Localization & Polish
 
 ### Added

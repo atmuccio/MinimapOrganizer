@@ -136,6 +136,65 @@ function Settings:RegisterSettings()
         _G.Settings.CreateSlider(category, setting, options, tooltip)
     end
 
+    -- Window Opacity
+    do
+        local variable = "MinimapOrganizer_WindowOpacity"
+        local name = L.SETTINGS_WINDOW_OPACITY
+        local tooltip = L.SETTINGS_WINDOW_OPACITY_TOOLTIP
+        local defaultValue = 0.9
+        local minValue = 0.3
+        local maxValue = 1.0
+        local step = 0.05
+
+        local function GetValue()
+            return MO.db.window.opacity
+        end
+
+        local function SetValue(value)
+            MO.db.window.opacity = value
+            MO.CollectionWindow:UpdateOpacity()
+        end
+
+        local setting = _G.Settings.RegisterProxySetting(category, variable,
+            _G.Settings.VarType.Number, name, defaultValue, GetValue, SetValue)
+        local options = _G.Settings.CreateSliderOptions(minValue, maxValue, step)
+        options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, function(value)
+            return string.format("%d%%", value * 100)
+        end)
+        _G.Settings.CreateSlider(category, setting, options, tooltip)
+    end
+
+    -- Theme
+    do
+        local variable = "MinimapOrganizer_Theme"
+        local name = L.SETTINGS_THEME
+        local tooltip = L.SETTINGS_THEME_TOOLTIP
+
+        local function GetOptions()
+            local container = _G.Settings.CreateControlTextContainer()
+            local themeNames = MO.CollectionWindow:GetThemeNames()
+            for _, themeName in ipairs(themeNames) do
+                local displayName = L["THEME_" .. string.upper(themeName)] or themeName
+                container:Add(themeName, displayName)
+            end
+            return container:GetData()
+        end
+
+        local function GetValue()
+            return MO.db.window.theme
+        end
+
+        local function SetValue(value)
+            MO.db.window.theme = value
+            MO.CollectionWindow:ApplyTheme()
+        end
+
+        local defaultValue = "Default"
+        local setting = _G.Settings.RegisterProxySetting(category, variable,
+            _G.Settings.VarType.String, name, defaultValue, GetValue, SetValue)
+        _G.Settings.CreateDropdown(category, setting, GetOptions, tooltip)
+    end
+
     -- Close on Button Click
     do
         local variable = "MinimapOrganizer_CloseOnClick"
