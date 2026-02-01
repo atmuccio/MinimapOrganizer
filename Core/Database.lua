@@ -29,6 +29,8 @@ MO.Database.defaults = {
         buttonSpacing = 4,
         scale = 1.0,
         closeOnClick = false,
+        theme = "Default",
+        opacity = 0.9,
     },
 
     -- Minimap button settings

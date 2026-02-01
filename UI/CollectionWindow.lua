@@ -9,16 +9,116 @@ local categoryFilter = "All"
 local headerFrames = {}
 local HEADER_HEIGHT = 20
 
--- Backdrop definition
-local WINDOW_BACKDROP = {
-    bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
-    edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
-    tile = true,
-    tileEdge = true,
-    tileSize = 32,
-    edgeSize = 32,
-    insets = { left = 11, right = 12, top = 12, bottom = 11 },
+-- Theme definitions
+local THEMES = {
+    Default = {
+        backdrop = {
+            bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
+            edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
+            tile = true,
+            tileEdge = true,
+            tileSize = 32,
+            edgeSize = 32,
+            insets = { left = 11, right = 12, top = 12, bottom = 11 },
+        },
+        backgroundColor = { 0, 0, 0 },
+        borderColor = { 1, 1, 1, 1 },
+        titleBar = {
+            bgFile = "Interface\\Buttons\\WHITE8X8",
+            edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+            tile = true,
+            tileSize = 8,
+            edgeSize = 12,
+            insets = { left = 2, right = 2, top = 2, bottom = 2 },
+        },
+        titleBarColor = { 0.1, 0.1, 0.1, 0.8 },
+        titleBarBorderColor = { 0.3, 0.3, 0.3, 1 },
+    },
+    Dark = {
+        backdrop = {
+            bgFile = "Interface\\Buttons\\WHITE8X8",
+            edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+            tile = true,
+            tileEdge = true,
+            tileSize = 8,
+            edgeSize = 16,
+            insets = { left = 4, right = 4, top = 4, bottom = 4 },
+        },
+        backgroundColor = { 0.05, 0.05, 0.05 },
+        borderColor = { 0.2, 0.2, 0.2, 1 },
+        titleBar = {
+            bgFile = "Interface\\Buttons\\WHITE8X8",
+            edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+            tile = true,
+            tileSize = 8,
+            edgeSize = 12,
+            insets = { left = 2, right = 2, top = 2, bottom = 2 },
+        },
+        titleBarColor = { 0.08, 0.08, 0.08, 0.95 },
+        titleBarBorderColor = { 0.15, 0.15, 0.15, 1 },
+    },
+    Transparent = {
+        backdrop = {
+            bgFile = "Interface\\Buttons\\WHITE8X8",
+            edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+            tile = true,
+            tileEdge = true,
+            tileSize = 8,
+            edgeSize = 16,
+            insets = { left = 4, right = 4, top = 4, bottom = 4 },
+        },
+        backgroundColor = { 0, 0, 0 },
+        borderColor = { 0.4, 0.4, 0.4, 0.8 },
+        titleBar = {
+            bgFile = "Interface\\Buttons\\WHITE8X8",
+            edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+            tile = true,
+            tileSize = 8,
+            edgeSize = 12,
+            insets = { left = 2, right = 2, top = 2, bottom = 2 },
+        },
+        titleBarColor = { 0.1, 0.1, 0.1, 0.6 },
+        titleBarBorderColor = { 0.3, 0.3, 0.3, 0.8 },
+    },
+    Minimal = {
+        backdrop = {
+            bgFile = "Interface\\Buttons\\WHITE8X8",
+            edgeFile = "Interface\\Buttons\\WHITE8X8",
+            tile = true,
+            tileEdge = true,
+            tileSize = 8,
+            edgeSize = 1,
+            insets = { left = 1, right = 1, top = 1, bottom = 1 },
+        },
+        backgroundColor = { 0.1, 0.1, 0.1 },
+        borderColor = { 0.3, 0.3, 0.3, 1 },
+        titleBar = {
+            bgFile = "Interface\\Buttons\\WHITE8X8",
+            edgeFile = "Interface\\Buttons\\WHITE8X8",
+            tile = true,
+            tileSize = 8,
+            edgeSize = 1,
+            insets = { left = 1, right = 1, top = 1, bottom = 1 },
+        },
+        titleBarColor = { 0.15, 0.15, 0.15, 0.9 },
+        titleBarBorderColor = { 0.3, 0.3, 0.3, 1 },
+    },
 }
+
+-- Get available theme names
+function CollectionWindow:GetThemeNames()
+    local names = {}
+    for name in pairs(THEMES) do
+        table.insert(names, name)
+    end
+    table.sort(names)
+    return names
+end
+
+-- Get a theme by name
+function CollectionWindow:GetTheme(name)
+    return THEMES[name] or THEMES["Default"]
+end
 
 -- Initialize the collection window
 function CollectionWindow:Initialize()
@@ -26,8 +126,41 @@ function CollectionWindow:Initialize()
     MO.Utils.Debug("CollectionWindow initialized")
 end
 
+-- Apply theme to the window
+function CollectionWindow:ApplyTheme()
+    if not mainWindow then return end
+
+    local theme = self:GetTheme(MO.db.window.theme)
+    local opacity = MO.db.window.opacity or 0.9
+
+    -- Apply main window backdrop
+    mainWindow:SetBackdrop(theme.backdrop)
+    mainWindow:SetBackdropColor(theme.backgroundColor[1], theme.backgroundColor[2], theme.backgroundColor[3], opacity)
+    mainWindow:SetBackdropBorderColor(unpack(theme.borderColor))
+
+    -- Apply title bar backdrop
+    if mainWindow.titleBar then
+        mainWindow.titleBar:SetBackdrop(theme.titleBar)
+        mainWindow.titleBar:SetBackdropColor(unpack(theme.titleBarColor))
+        mainWindow.titleBar:SetBackdropBorderColor(unpack(theme.titleBarBorderColor))
+    end
+end
+
+-- Update opacity only (without full theme reapply)
+function CollectionWindow:UpdateOpacity()
+    if not mainWindow then return end
+
+    local theme = self:GetTheme(MO.db.window.theme)
+    local opacity = MO.db.window.opacity or 0.9
+
+    mainWindow:SetBackdropColor(theme.backgroundColor[1], theme.backgroundColor[2], theme.backgroundColor[3], opacity)
+end
+
 -- Create the main window
 function CollectionWindow:CreateWindow()
+    local theme = self:GetTheme(MO.db.window.theme)
+    local opacity = MO.db.window.opacity or 0.9
+
     -- Main frame
     mainWindow = CreateFrame("Frame", "MinimapOrganizer_CollectionWindow", UIParent, "BackdropTemplate")
     mainWindow:SetPoint(MO.db.window.point, UIParent, MO.db.window.relativePoint, MO.db.window.x, MO.db.window.y)
@@ -37,8 +170,9 @@ function CollectionWindow:CreateWindow()
     mainWindow:EnableMouse(true)
     mainWindow:SetFrameStrata("MEDIUM")
     mainWindow:SetFrameLevel(100)
-    mainWindow:SetBackdrop(WINDOW_BACKDROP)
-    mainWindow:SetBackdropColor(0, 0, 0, 0.9)
+    mainWindow:SetBackdrop(theme.backdrop)
+    mainWindow:SetBackdropColor(theme.backgroundColor[1], theme.backgroundColor[2], theme.backgroundColor[3], opacity)
+    mainWindow:SetBackdropBorderColor(unpack(theme.borderColor))
     mainWindow:Hide()
 
     -- Register for escape to close
@@ -49,16 +183,9 @@ function CollectionWindow:CreateWindow()
     titleBar:SetHeight(24)
     titleBar:SetPoint("TOPLEFT", 7, -6)
     titleBar:SetPoint("TOPRIGHT", -26, -6)
-    titleBar:SetBackdrop({
-        bgFile = "Interface\\Buttons\\WHITE8X8",
-        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-        tile = true,
-        tileSize = 8,
-        edgeSize = 12,
-        insets = { left = 2, right = 2, top = 2, bottom = 2 },
-    })
-    titleBar:SetBackdropColor(0.1, 0.1, 0.1, 0.8)
-    titleBar:SetBackdropBorderColor(0.3, 0.3, 0.3, 1)
+    titleBar:SetBackdrop(theme.titleBar)
+    titleBar:SetBackdropColor(unpack(theme.titleBarColor))
+    titleBar:SetBackdropBorderColor(unpack(theme.titleBarBorderColor))
     titleBar:EnableMouse(true)
     titleBar:RegisterForDrag("LeftButton")
 
@@ -90,7 +217,7 @@ function CollectionWindow:CreateWindow()
 
     -- Content area (where buttons go)
     local content = CreateFrame("Frame", nil, mainWindow)
-    content:SetPoint("TOPLEFT", 16, -60)
+    content:SetPoint("TOPLEFT", 16, -64)
     content:SetPoint("BOTTOMRIGHT", -16, 16)
     mainWindow.content = content
 
@@ -273,7 +400,7 @@ function CollectionWindow:RefreshLayout()
 
         -- Set window size
         local windowWidth = contentWidth + 32
-        local windowHeight = contentHeight + 72
+        local windowHeight = contentHeight + 76
         mainWindow:SetSize(windowWidth, windowHeight)
     else
         -- Standard layout without headers
@@ -283,9 +410,9 @@ function CollectionWindow:RefreshLayout()
         local contentHeight = rows * (size + spacing) - spacing
         contentHeight = math.max(contentHeight, size)
 
-        -- Set window size (add padding for title, borders)
+        -- Set window size (add padding for title, dropdown, borders)
         local windowWidth = contentWidth + 32
-        local windowHeight = contentHeight + 72  -- Title + dropdown + padding
+        local windowHeight = contentHeight + 76
 
         mainWindow:SetSize(windowWidth, windowHeight)
 
@@ -437,6 +564,16 @@ function CollectionWindow:SetupSlot(slot, btnData)
     frame:SetSize(size - 4, size - 4)  -- Slightly smaller to fit in slot
     frame:SetAlpha(1)  -- Force full opacity regardless of addon's settings
     frame:EnableMouse(false)  -- Disable mouse on button - let the slot handle clicks
+
+    -- Reset frame strata/level - LibDBIcon uses fixed strata which can cause issues
+    if frame.SetFixedFrameStrata then
+        frame:SetFixedFrameStrata(false)
+    end
+    if frame.SetFixedFrameLevel then
+        frame:SetFixedFrameLevel(false)
+    end
+    frame:SetFrameStrata("MEDIUM")
+    frame:SetFrameLevel(slot:GetFrameLevel() + 5)
 
     -- Fix dark icons: reset vertex colors and desaturation on all textures
     FixFrameTextures(frame)

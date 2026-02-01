@@ -10,6 +10,8 @@ Tired of minimap button clutter? **MinimapOrganizer** collects all your addon bu
 - **Smart Sorting** - Sort alphabetically or by category with visual section headers
 - **Friendly Names** - Tooltips show readable addon names, not cryptic frame names
 - **Flexible Layout** - Adjust buttons per row and window scale to fit your UI
+- **Theme Selection** - Choose from Default, Dark, Transparent, or Minimal themes
+- **Adjustable Opacity** - Set window background transparency to match your UI
 - **Exclusions** - Keep specific buttons on the minimap if you prefer
 
 ## How to Use
@@ -31,6 +33,8 @@ Access via the WoW addon settings panel or `/mo settings`:
 - Hide/lock the minimap button
 - Buttons per row (4-16)
 - Window scale (50%-200%)
+- Window opacity (30%-100%)
+- Theme (Default, Dark, Transparent, Minimal)
 - Auto-close after clicking
 - Sort method
 - Auto-collect new buttons
