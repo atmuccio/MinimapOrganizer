@@ -222,6 +222,9 @@ function CollectionWindow:CreateWindow()
     mainWindow.content = content
 
     self.mainWindow = mainWindow
+
+    -- Apply initial filter visibility
+    self:UpdateFilterVisibility()
 end
 
 -- Create category filter dropdown
@@ -275,6 +278,25 @@ function CollectionWindow:CreateCategoryDropdown(parent)
     mainWindow.categoryDropdown = dropdown
 end
 
+-- Update filter dropdown visibility based on settings
+function CollectionWindow:UpdateFilterVisibility()
+    if not mainWindow then return end
+
+    local hide = MO.db.window.hideFilter
+    if hide then
+        mainWindow.categoryDropdown:Hide()
+        categoryFilter = "All"
+        mainWindow.content:SetPoint("TOPLEFT", 16, -36)
+    else
+        mainWindow.categoryDropdown:Show()
+        mainWindow.content:SetPoint("TOPLEFT", 16, -64)
+    end
+
+    if mainWindow:IsShown() then
+        self:RefreshLayout()
+    end
+end
+
 -- Get or create a category header
 local function GetOrCreateHeader(index, parent)
     if headerFrames[index] then
@@ -314,6 +336,7 @@ function CollectionWindow:RefreshLayout()
     if not mainWindow or not mainWindow:IsShown() then return end
 
     local opts = MO.db.window
+    local heightPadding = opts.hideFilter and 48 or 76
     local buttons, categoryBreaks = MO.ButtonManager:GetSortedButtons(categoryFilter)
     local content = mainWindow.content
 
@@ -400,7 +423,7 @@ function CollectionWindow:RefreshLayout()
 
         -- Set window size
         local windowWidth = contentWidth + 32
-        local windowHeight = contentHeight + 76
+        local windowHeight = contentHeight + heightPadding
         mainWindow:SetSize(windowWidth, windowHeight)
     else
         -- Standard layout without headers
@@ -412,7 +435,7 @@ function CollectionWindow:RefreshLayout()
 
         -- Set window size (add padding for title, dropdown, borders)
         local windowWidth = contentWidth + 32
-        local windowHeight = contentHeight + 76
+        local windowHeight = contentHeight + heightPadding
 
         mainWindow:SetSize(windowWidth, windowHeight)
 

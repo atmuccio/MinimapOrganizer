@@ -56,6 +56,8 @@ MO.L = {
     SETTINGS_THEME_TOOLTIP = "Visual style of the collection window.",
     SETTINGS_CLOSE_ON_CLICK = "Close Window After Click",
     SETTINGS_CLOSE_ON_CLICK_TOOLTIP = "Close the window after clicking a button.",
+    SETTINGS_HIDE_FILTER = "Hide Category Filter",
+    SETTINGS_HIDE_FILTER_TOOLTIP = "Hide the category filter dropdown from the collection window.",
     SETTINGS_SORT_METHOD = "Sort Method",
     SETTINGS_SORT_METHOD_TOOLTIP = "How to sort buttons in the collection.",
 

@@ -36,6 +36,7 @@ Access via the WoW addon settings panel or `/mo settings`:
 - Window opacity (30%-100%)
 - Theme (Default, Dark, Transparent, Minimal)
 - Auto-close after clicking
+- Hide category filter
 - Sort method
 - Auto-collect new buttons
 - Show favorites first

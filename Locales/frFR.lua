@@ -53,6 +53,8 @@ MO.L.THEME_TRANSPARENT = "Transparent"
 MO.L.THEME_MINIMAL = "Minimal"
 MO.L.SETTINGS_CLOSE_ON_CLICK = "Fermer la fenêtre après un clic"
 MO.L.SETTINGS_CLOSE_ON_CLICK_TOOLTIP = "Ferme la fenêtre après avoir cliqué sur un bouton."
+MO.L.SETTINGS_HIDE_FILTER = "Masquer le filtre de catégorie"
+MO.L.SETTINGS_HIDE_FILTER_TOOLTIP = "Masque le menu déroulant de filtre de catégorie de la fenêtre de collection."
 MO.L.SETTINGS_SORT_METHOD = "Méthode de tri"
 MO.L.SETTINGS_SORT_METHOD_TOOLTIP = "Comment trier les boutons dans la collection."
 

@@ -53,6 +53,8 @@ MO.L.THEME_TRANSPARENT = "Transparent"
 MO.L.THEME_MINIMAL = "Minimal"
 MO.L.SETTINGS_CLOSE_ON_CLICK = "Fenster nach Klick schließen"
 MO.L.SETTINGS_CLOSE_ON_CLICK_TOOLTIP = "Schließt das Fenster nach dem Klicken auf eine Schaltfläche."
+MO.L.SETTINGS_HIDE_FILTER = "Kategoriefilter ausblenden"
+MO.L.SETTINGS_HIDE_FILTER_TOOLTIP = "Blendet das Kategoriefilter-Dropdown im Sammlungsfenster aus."
 MO.L.SETTINGS_SORT_METHOD = "Sortiermethode"
 MO.L.SETTINGS_SORT_METHOD_TOOLTIP = "Wie Schaltflächen in der Sammlung sortiert werden."
 

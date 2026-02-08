@@ -53,6 +53,8 @@ MO.L.THEME_TRANSPARENT = "Прозрачная"
 MO.L.THEME_MINIMAL = "Минимальная"
 MO.L.SETTINGS_CLOSE_ON_CLICK = "Закрывать окно после клика"
 MO.L.SETTINGS_CLOSE_ON_CLICK_TOOLTIP = "Закрывает окно после нажатия на кнопку."
+MO.L.SETTINGS_HIDE_FILTER = "Скрыть фильтр категорий"
+MO.L.SETTINGS_HIDE_FILTER_TOOLTIP = "Скрывает выпадающий список фильтра категорий из окна коллекции."
 MO.L.SETTINGS_SORT_METHOD = "Метод сортировки"
 MO.L.SETTINGS_SORT_METHOD_TOOLTIP = "Как сортировать кнопки в коллекции."
 

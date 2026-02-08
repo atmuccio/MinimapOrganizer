@@ -215,6 +215,27 @@ function Settings:RegisterSettings()
         _G.Settings.CreateCheckbox(category, setting, tooltip)
     end
 
+    -- Hide Category Filter
+    do
+        local variable = "MinimapOrganizer_HideFilter"
+        local name = L.SETTINGS_HIDE_FILTER
+        local tooltip = L.SETTINGS_HIDE_FILTER_TOOLTIP
+        local defaultValue = false
+
+        local function GetValue()
+            return MO.db.window.hideFilter
+        end
+
+        local function SetValue(value)
+            MO.db.window.hideFilter = value
+            MO.CollectionWindow:UpdateFilterVisibility()
+        end
+
+        local setting = _G.Settings.RegisterProxySetting(category, variable,
+            _G.Settings.VarType.Boolean, name, defaultValue, GetValue, SetValue)
+        _G.Settings.CreateCheckbox(category, setting, tooltip)
+    end
+
     -- Sort Method
     do
         local variable = "MinimapOrganizer_SortMethod"
