@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.3.0] - Hide Filter & Discord Notifications
+
+### Added
+- **Hide Category Filter** - New setting to hide the category filter dropdown from the collection window
+- **Discord Notifications** - GitHub Actions workflow for Discord notifications on new PRs, issues, and release deployments
+
 ## [1.2.1] - Themes & Customization
 
 ### Added

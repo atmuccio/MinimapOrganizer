@@ -1,0 +1,50 @@
+name: Discord Notifications
+
+on:
+  pull_request:
+    types: [opened]
+  issues:
+    types: [opened]
+
+jobs:
+  notify-pr:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Discord
+        run: |
+          curl -s -H "Content-Type: application/json" -d "{
+            \"embeds\": [{
+              \"title\": \"Pull Request Opened\",
+              \"description\": \"${{ github.event.pull_request.title }}\",
+              \"color\": 3447003,
+              \"fields\": [
+                {\"name\": \"Author\", \"value\": \"${{ github.event.pull_request.user.login }}\", \"inline\": true},
+                {\"name\": \"Branch\", \"value\": \"\`${{ github.event.pull_request.head.ref }}\` → \`${{ github.event.pull_request.base.ref }}\`\", \"inline\": true}
+              ],
+              \"url\": \"${{ github.event.pull_request.html_url }}\",
+              \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"
+            }]
+          }" "${{ secrets.DISCORD_WEBHOOK }}"
+
+  notify-issue:
+    if: github.event_name == 'issues'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Discord
+        run: |
+          LABELS=$(echo '${{ toJSON(github.event.issue.labels.*.name) }}' | jq -r 'join(", ")' 2>/dev/null || echo "None")
+
+          curl -s -H "Content-Type: application/json" -d "{
+            \"embeds\": [{
+              \"title\": \"New Issue\",
+              \"description\": \"${{ github.event.issue.title }}\",
+              \"color\": 15105570,
+              \"fields\": [
+                {\"name\": \"Author\", \"value\": \"${{ github.event.issue.user.login }}\", \"inline\": true},
+                {\"name\": \"Labels\", \"value\": \"$LABELS\", \"inline\": true}
+              ],
+              \"url\": \"${{ github.event.issue.html_url }}\",
+              \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"
+            }]
+          }" "${{ secrets.DISCORD_WEBHOOK }}"

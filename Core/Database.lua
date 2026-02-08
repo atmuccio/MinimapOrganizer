@@ -31,6 +31,7 @@ MO.Database.defaults = {
         closeOnClick = false,
         theme = "Default",
         opacity = 0.9,
+        hideFilter = false,
     },
 
     -- Minimap button settings

@@ -53,6 +53,8 @@ MO.L.THEME_TRANSPARENT = "투명"
 MO.L.THEME_MINIMAL = "미니멀"
 MO.L.SETTINGS_CLOSE_ON_CLICK = "클릭 후 창 닫기"
 MO.L.SETTINGS_CLOSE_ON_CLICK_TOOLTIP = "버튼을 클릭한 후 창을 닫습니다."
+MO.L.SETTINGS_HIDE_FILTER = "카테고리 필터 숨기기"
+MO.L.SETTINGS_HIDE_FILTER_TOOLTIP = "컬렉션 창에서 카테고리 필터 드롭다운을 숨깁니다."
 MO.L.SETTINGS_SORT_METHOD = "정렬 방법"
 MO.L.SETTINGS_SORT_METHOD_TOOLTIP = "컬렉션에서 버튼을 정렬하는 방법입니다."
 

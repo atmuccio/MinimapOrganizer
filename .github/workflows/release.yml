@@ -30,3 +30,40 @@ jobs:
       # This is a requested feature but not yet implemented.
       # Descriptions must be updated manually at: https://authors.curseforge.com/
       # See: https://curseforge-ideas.overwolf.com/?category=6844088570764767168
+
+  notify:
+    needs: release
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Notify Discord
+        run: |
+          if [ "${{ needs.release.result }}" = "success" ]; then
+            COLOR=3066993
+            TITLE="Release Published"
+            DESCRIPTION="MinimapOrganizer ${{ github.ref_name }} has been released."
+          else
+            COLOR=15158332
+            TITLE="Release Failed"
+            DESCRIPTION="MinimapOrganizer ${{ github.ref_name }} release failed. Check the workflow logs."
+          fi
+
+          COMMIT_MSG=$(git log -1 --pretty=%s)
+
+          curl -s -H "Content-Type: application/json" -d "{
+            \"embeds\": [{
+              \"title\": \"$TITLE\",
+              \"description\": \"$DESCRIPTION\",
+              \"color\": $COLOR,
+              \"fields\": [
+                {\"name\": \"Version\", \"value\": \"\`${{ github.ref_name }}\`\", \"inline\": true},
+                {\"name\": \"Triggered by\", \"value\": \"${{ github.actor }}\", \"inline\": true},
+                {\"name\": \"Commit\", \"value\": \"[\`${GITHUB_SHA::7}\`](https://github.com/${{ github.repository }}/commit/${GITHUB_SHA}) $COMMIT_MSG\", \"inline\": false}
+              ],
+              \"url\": \"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\",
+              \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"
+            }]
+          }" "${{ secrets.DISCORD_WEBHOOK }}"
