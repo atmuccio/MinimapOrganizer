@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.3.1] - WoW 12.0.1 Compatibility
+
+### Changed
+- Updated Interface version to 120001 for WoW 12.0.1 (Midnight launch)
+- Fixed addon version string being out of sync between TOC and runtime
+
 ## [1.3.0] - Hide Filter & Discord Notifications
 
 ### Added
