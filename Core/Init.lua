@@ -5,7 +5,7 @@ _G.MinimapOrganizer = MO
 
 -- Addon metadata
 MO.name = ADDON_NAME
-MO.version = "1.1.0"
+MO.version = "1.3.1"
 
 -- System buttons to never collect (built-in WoW and common addon frames)
 MO.SYSTEM_IGNORE = {
