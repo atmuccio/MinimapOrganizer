@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.4.0] - Preserve Original Button Behavior
+
+### Added
+- **Manage Mode** - Gear icon on the collection window title bar toggles between normal and manage mode
+- **Normal Mode** - All clicks (left, right, middle + modifiers) and tooltips pass through to the original addon button untouched
+- **Manage Mode** - Left-click toggles favorites, right-click opens MO context menu (categories, release)
+
+### Changed
+- Original button tooltips are now shown in normal mode instead of MO's custom tooltip
+- Original button click handlers (including right-click and middle-click) are now preserved
+- Manage mode automatically resets when the collection window is closed
+
+### Fixed
+- Original button tooltips were being overwritten with MO-only information ([#7](https://github.com/atmuccio/MinimapOrganizer/issues/7))
+- Right-click and middle-click on collected buttons were not forwarded to the original addon ([#7](https://github.com/atmuccio/MinimapOrganizer/issues/7))
+
 ## [1.3.1] - WoW 12.0.1 Compatibility
 
 ### Changed
