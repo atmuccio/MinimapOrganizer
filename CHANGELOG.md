@@ -1,5 +1,34 @@
 # Changelog
 
+## [1.4.1] - UI Polish
+
+### Changed
+- Redesigned title bar buttons using native Blizzard atlas textures for a cleaner, more consistent look
+- Gear icon now uses proper hover, pressed, and active states matching Blizzard's UI style
+- Close button replaced with atlas-based version for visual consistency with gear icon
+- Manage mode tooltip now updates immediately on click without requiring mouse-off
+- Improved window dragging to prevent cursor offset issues
+
+### Fixed
+- Tooltips no longer appear when dragging the collection window over buttons
+- Window drag now anchors correctly to the cursor position
+
+## [1.4.0] - Preserve Original Button Behavior
+
+### Added
+- **Manage Mode** - Gear icon on the collection window title bar toggles between normal and manage mode
+- **Normal Mode** - All clicks (left, right, middle + modifiers) and tooltips pass through to the original addon button untouched
+- **Manage Mode** - Left-click toggles favorites, right-click opens MO context menu (categories, release)
+
+### Changed
+- Original button tooltips are now shown in normal mode instead of MO's custom tooltip
+- Original button click handlers (including right-click and middle-click) are now preserved
+- Manage mode automatically resets when the collection window is closed
+
+### Fixed
+- Original button tooltips were being overwritten with MO-only information ([#7](https://github.com/atmuccio/MinimapOrganizer/issues/7))
+- Right-click and middle-click on collected buttons were not forwarded to the original addon ([#7](https://github.com/atmuccio/MinimapOrganizer/issues/7))
+
 ## [1.3.1] - WoW 12.0.1 Compatibility
 
 ### Changed

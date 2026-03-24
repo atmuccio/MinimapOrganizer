@@ -16,8 +16,14 @@ MO.L = {
     TOOLTIP_LEFTCLICK = "Left-click to open",
     TOOLTIP_RIGHTCLICK = "Right-click for settings",
     TOOLTIP_DRAG = "Drag to move",
-    TOOLTIP_BUTTON_RIGHTCLICK = "Right-click for options",
-    TOOLTIP_CTRL_CLICK = "Ctrl+Click to toggle favorite",
+    TOOLTIP_MANAGE_LEFTCLICK = "Left-click to toggle favorite",
+    TOOLTIP_MANAGE_RIGHTCLICK = "Right-click for options",
+
+    -- Manage mode
+    MANAGE_MODE = "Manage Mode",
+    MANAGE_MODE_ACTIVE = "Manage Mode (Active)",
+    MANAGE_MODE_CLICK_ENABLE = "Click to organize buttons",
+    MANAGE_MODE_CLICK_DISABLE = "Click to return to normal",
 
     -- Context menu
     TOGGLE_FAVORITE = "Toggle Favorite",

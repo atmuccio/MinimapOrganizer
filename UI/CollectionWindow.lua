@@ -8,6 +8,7 @@ local buttonSlots = {}
 local categoryFilter = "All"
 local headerFrames = {}
 local HEADER_HEIGHT = 20
+local manageMode = false
 
 -- Theme definitions
 local THEMES = {
@@ -180,37 +181,130 @@ function CollectionWindow:CreateWindow()
 
     -- Title bar with backdrop
     local titleBar = CreateFrame("Frame", nil, mainWindow, "BackdropTemplate")
-    titleBar:SetHeight(24)
+    titleBar:SetHeight(28)
     titleBar:SetPoint("TOPLEFT", 7, -6)
-    titleBar:SetPoint("TOPRIGHT", -26, -6)
+    titleBar:SetPoint("TOPRIGHT", -7, -6)
     titleBar:SetBackdrop(theme.titleBar)
     titleBar:SetBackdropColor(unpack(theme.titleBarColor))
     titleBar:SetBackdropBorderColor(unpack(theme.titleBarBorderColor))
     titleBar:EnableMouse(true)
-    titleBar:RegisterForDrag("LeftButton")
 
-    titleBar:SetScript("OnDragStart", function()
+    titleBar:SetScript("OnMouseDown", function()
         mainWindow:StartMoving()
     end)
 
-    titleBar:SetScript("OnDragStop", function()
+    titleBar:SetScript("OnMouseUp", function()
         mainWindow:StopMovingOrSizing()
         CollectionWindow:SavePosition()
     end)
 
-    -- Title text (centered in bar)
+    -- Title text
     local title = titleBar:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    title:SetPoint("LEFT", titleBar, "LEFT", 8, 0)
+    title:SetPoint("LEFT", titleBar, "LEFT", 10, 0)
     title:SetText(MO.L.WINDOW_TITLE)
     mainWindow.title = title
     mainWindow.titleBar = titleBar
 
     -- Close button
-    local closeBtn = CreateFrame("Button", nil, mainWindow, "UIPanelCloseButton")
-    closeBtn:SetPoint("TOPRIGHT", mainWindow, "TOPRIGHT", -5, -6)
-    closeBtn:SetScript("OnClick", function()
+    local TITLE_BTN_SIZE = 22
+    local closeBtn = CreateFrame("Button", nil, titleBar)
+    closeBtn:SetSize(TITLE_BTN_SIZE, TITLE_BTN_SIZE)
+    closeBtn:SetPoint("RIGHT", titleBar, "RIGHT", -5, 0)
+
+    local closeBtnIcon = closeBtn:CreateTexture(nil, "ARTWORK")
+    closeBtnIcon:SetSize(TITLE_BTN_SIZE, TITLE_BTN_SIZE)
+    closeBtnIcon:SetPoint("CENTER")
+    closeBtnIcon:SetAtlas("RedButton-Exit", false)
+    closeBtn.icon = closeBtnIcon
+
+    local closeBtnHighlight = closeBtn:CreateTexture(nil, "HIGHLIGHT")
+    closeBtnHighlight:SetAllPoints()
+    closeBtnHighlight:SetAtlas("RedButton-Highlight")
+    closeBtnHighlight:SetAlpha(0.5)
+    closeBtnHighlight:SetBlendMode("ADD")
+    closeBtnHighlight:SetDesaturated(true)
+
+    closeBtn:SetScript("OnMouseDown", function(self)
+        self.icon:SetAtlas("RedButton-exit-pressed", false)
+    end)
+    closeBtn:SetScript("OnMouseUp", function(self)
+        self.icon:SetAtlas("RedButton-Exit", false)
         CollectionWindow:Hide()
     end)
+
+    -- Manage mode toggle button (gear icon on title bar)
+    local manageBtn = CreateFrame("Button", nil, titleBar)
+    manageBtn:SetSize(TITLE_BTN_SIZE, TITLE_BTN_SIZE)
+    manageBtn:SetPoint("RIGHT", closeBtn, "LEFT", -5, 0)
+
+    local manageBtnIcon = manageBtn:CreateTexture(nil, "ARTWORK")
+    manageBtnIcon:SetSize(TITLE_BTN_SIZE + 4, TITLE_BTN_SIZE + 4)
+    manageBtnIcon:SetPoint("CENTER", 0, -3)
+    manageBtnIcon:SetAtlas("common-dropdown-a-button-settings-shadowless", false)
+    manageBtnIcon:SetDesaturated(true)
+    manageBtn.icon = manageBtnIcon
+
+    manageBtn:SetScript("OnClick", function(self)
+        CollectionWindow:ToggleManageMode()
+        -- Refresh tooltip to reflect new state
+        if GameTooltip:IsOwned(self) then
+            GameTooltip:ClearLines()
+            if manageMode then
+                GameTooltip:AddLine(MO.L.MANAGE_MODE_ACTIVE, 1, 0.82, 0)
+                GameTooltip:AddLine(MO.L.MANAGE_MODE_CLICK_DISABLE, 0.5, 0.5, 0.5)
+            else
+                GameTooltip:AddLine(MO.L.MANAGE_MODE, 1, 1, 1)
+                GameTooltip:AddLine(MO.L.MANAGE_MODE_CLICK_ENABLE, 0.5, 0.5, 0.5)
+            end
+            GameTooltip:Show()
+        end
+    end)
+
+    manageBtn:SetScript("OnMouseDown", function(self)
+        self.icon:SetAtlas("common-dropdown-a-button-settings-pressed-shadowless")
+        if not manageMode then
+            self.icon:SetDesaturated(true)
+        end
+    end)
+
+    manageBtn:SetScript("OnMouseUp", function(self)
+        if manageMode then
+            self.icon:SetAtlas("common-dropdown-a-button-settings-open-shadowless")
+            self.icon:SetDesaturated(false)
+        else
+            self.icon:SetAtlas("common-dropdown-a-button-settings-shadowless")
+            self.icon:SetDesaturated(true)
+        end
+    end)
+
+    manageBtn:SetScript("OnEnter", function(self)
+        if not manageMode then
+            self.icon:SetAtlas("common-dropdown-a-button-settings-hover-shadowless")
+            self.icon:SetDesaturated(true)
+        end
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        if manageMode then
+            GameTooltip:AddLine(MO.L.MANAGE_MODE_ACTIVE, 1, 0.82, 0)
+            GameTooltip:AddLine(MO.L.MANAGE_MODE_CLICK_DISABLE, 0.5, 0.5, 0.5)
+        else
+            GameTooltip:AddLine(MO.L.MANAGE_MODE, 1, 1, 1)
+            GameTooltip:AddLine(MO.L.MANAGE_MODE_CLICK_ENABLE, 0.5, 0.5, 0.5)
+        end
+        GameTooltip:Show()
+    end)
+
+    manageBtn:SetScript("OnLeave", function(self)
+        if manageMode then
+            self.icon:SetAtlas("common-dropdown-a-button-settings-open-shadowless")
+            self.icon:SetDesaturated(false)
+        else
+            self.icon:SetAtlas("common-dropdown-a-button-settings-shadowless")
+            self.icon:SetDesaturated(true)
+        end
+        GameTooltip:Hide()
+    end)
+
+    mainWindow.manageBtn = manageBtn
 
     -- Category filter dropdown
     self:CreateCategoryDropdown(mainWindow)
@@ -295,6 +389,29 @@ function CollectionWindow:UpdateFilterVisibility()
     if mainWindow:IsShown() then
         self:RefreshLayout()
     end
+end
+
+-- Toggle manage mode
+function CollectionWindow:ToggleManageMode()
+    manageMode = not manageMode
+
+    -- Update gear icon visual state
+    if mainWindow and mainWindow.manageBtn then
+        if manageMode then
+            mainWindow.manageBtn.icon:SetAtlas("common-dropdown-a-button-settings-open-shadowless")
+            mainWindow.manageBtn.icon:SetDesaturated(false)
+            mainWindow.manageBtn.icon:SetVertexColor(1, 0.82, 0)
+        else
+            mainWindow.manageBtn.icon:SetAtlas("common-dropdown-a-button-settings-shadowless")
+            mainWindow.manageBtn.icon:SetDesaturated(true)
+            mainWindow.manageBtn.icon:SetVertexColor(1, 1, 1)
+        end
+    end
+end
+
+-- Check if manage mode is active
+function CollectionWindow:IsManageMode()
+    return manageMode
 end
 
 -- Get or create a category header
@@ -489,62 +606,83 @@ function CollectionWindow:GetOrCreateSlot(index)
     highlight:SetAllPoints()
     highlight:SetColorTexture(1, 1, 1, 0.15)
 
-    -- Tooltip
+    -- Tooltip handler
     slot:SetScript("OnEnter", function(self)
-        if self.buttonData then
+        if not self.buttonData then return end
+        local frame = self.buttonData.frame
+
+        if manageMode then
+            -- Manage mode: show MO management tooltip
             GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 
-            -- Show friendly addon name
             local displayName = MO.Utils.GetAddonDisplayName(self.buttonData.name)
             GameTooltip:AddLine(displayName, 1, 1, 1)
-
-            -- Show raw frame name in smaller gray text if different
-            if displayName ~= self.buttonData.name then
-                GameTooltip:AddLine(self.buttonData.name, 0.5, 0.5, 0.5)
-            end
-
             GameTooltip:AddLine(MO.L.CATEGORY .. ": " .. self.buttonData.category, 0.7, 0.7, 0.7)
             if self.buttonData.isFavorite then
                 GameTooltip:AddLine(MO.L.FAVORITE, 1, 0.84, 0)
             end
             GameTooltip:AddLine(" ")
-            GameTooltip:AddLine(MO.L.TOOLTIP_BUTTON_RIGHTCLICK, 0.5, 0.5, 0.5)
-            GameTooltip:AddLine(MO.L.TOOLTIP_CTRL_CLICK, 0.5, 0.5, 0.5)
+            GameTooltip:AddLine(MO.L.TOOLTIP_MANAGE_LEFTCLICK, 0.5, 0.5, 0.5)
+            GameTooltip:AddLine(MO.L.TOOLTIP_MANAGE_RIGHTCLICK, 0.5, 0.5, 0.5)
             GameTooltip:Show()
+        else
+            -- Normal mode: show original button tooltip
+            if frame and frame._mo and frame._mo.oOnEnter then
+                frame._mo.oOnEnter(frame)
+            else
+                -- Fallback if no original OnEnter
+                GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+                local displayName = MO.Utils.GetAddonDisplayName(self.buttonData.name)
+                GameTooltip:AddLine(displayName, 1, 1, 1)
+                GameTooltip:Show()
+            end
         end
     end)
 
-    slot:SetScript("OnLeave", function()
+    slot:SetScript("OnLeave", function(self)
+        if self.buttonData then
+            local frame = self.buttonData.frame
+            -- Call original OnLeave for cleanup (highlights, etc.)
+            if not manageMode and frame and frame._mo and frame._mo.oOnLeave then
+                frame._mo.oOnLeave(frame)
+            end
+        end
         GameTooltip:Hide()
     end)
 
     -- Click handler
     slot:SetScript("OnClick", function(self, btn)
         if not self.buttonData then return end
+        local frame = self.buttonData.frame
 
-        if btn == "LeftButton" then
-            if IsControlKeyDown() then
-                -- Ctrl+Click to toggle favorite
+        if manageMode then
+            -- Manage mode: MO controls only, no forwarding
+            if btn == "LeftButton" then
                 MO.ButtonManager:ToggleFavorite(self.buttonData.name)
-            else
-                -- Regular click - forward to the actual button
-                local frame = self.buttonData.frame
-                if frame then
-                    -- Try various click handlers
-                    local script = frame:GetScript("OnClick")
-                    if script then
-                        script(frame, btn)
-                    end
-                end
-
-                -- Close window if setting enabled
-                if MO.db.window.closeOnClick then
-                    CollectionWindow:Hide()
-                end
+            elseif btn == "RightButton" then
+                CollectionWindow:ShowContextMenu(self)
             end
-        elseif btn == "RightButton" then
-            -- Show context menu
-            CollectionWindow:ShowContextMenu(self)
+        else
+            -- Normal mode: forward all clicks to the original button
+            if not frame or not frame._mo then return end
+
+            local handled = false
+            if frame._mo.oOnClick then
+                frame._mo.oOnClick(frame, btn)
+                handled = true
+            end
+            if frame._mo.oOnMouseUp then
+                frame._mo.oOnMouseUp(frame, btn)
+                handled = true
+            end
+            if not handled and frame._mo.oOnMouseDown then
+                frame._mo.oOnMouseDown(frame, btn)
+            end
+
+            -- Close window if setting enabled
+            if btn == "LeftButton" and MO.db.window.closeOnClick then
+                CollectionWindow:Hide()
+            end
         end
     end)
 
@@ -735,6 +873,16 @@ end
 
 -- Hide the window
 function CollectionWindow:Hide()
+    -- Reset manage mode when closing
+    if manageMode then
+        manageMode = false
+        if mainWindow.manageBtn then
+            mainWindow.manageBtn.icon:SetAtlas("common-dropdown-a-button-settings-shadowless")
+            mainWindow.manageBtn.icon:SetDesaturated(true)
+            mainWindow.manageBtn.icon:SetVertexColor(1, 1, 1)
+        end
+    end
+
     mainWindow:Hide()
 
     -- Re-hide all collected buttons
