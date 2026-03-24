@@ -5,6 +5,8 @@ A World of Warcraft addon that collects minimap buttons into a clean, organized 
 ## Features
 
 - **Collects minimap buttons** into a movable grid window
+- **Full button compatibility** - Original tooltips, clicks, and modifier keys work exactly as they do on the minimap
+- **Manage mode** - Gear icon toggles a management mode for organizing favorites, categories, and exclusions
 - **Custom categories** - Create, rename, reorder, and delete your own categories
 - **Favorites** - Mark buttons with a star for quick access
 - **Exclude buttons** - Keep specific buttons on the minimap

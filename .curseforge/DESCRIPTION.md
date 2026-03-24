@@ -5,6 +5,8 @@ Tired of minimap button clutter? **MinimapOrganizer** collects all your addon bu
 ## Features
 
 - **One-Click Collection** - Automatically gathers minimap buttons into a tidy grid
+- **Full Button Compatibility** - Original tooltips, clicks, and modifier keys work exactly as they do on the minimap
+- **Manage Mode** - Gear icon on the title bar toggles management mode for organizing favorites, categories, and exclusions
 - **Custom Categories** - Organize buttons into your own categories (combat, professions, etc.)
 - **Favorites** - Star your most-used buttons for quick access
 - **Smart Sorting** - Sort alphabetically or by category with visual section headers
