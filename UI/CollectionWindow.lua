@@ -216,7 +216,7 @@ function CollectionWindow:CreateWindow()
     -- Manage mode toggle button (gear icon on title bar)
     local manageBtn = CreateFrame("Button", nil, titleBar)
     manageBtn:SetSize(16, 16)
-    manageBtn:SetPoint("RIGHT", titleBar, "RIGHT", -4, 0)
+    manageBtn:SetPoint("RIGHT", titleBar, "RIGHT", -6, 0)
 
     local manageBtnIcon = manageBtn:CreateTexture(nil, "ARTWORK")
     manageBtnIcon:SetAllPoints()
@@ -558,11 +558,6 @@ function CollectionWindow:GetOrCreateSlot(index)
 
             local displayName = MO.Utils.GetAddonDisplayName(self.buttonData.name)
             GameTooltip:AddLine(displayName, 1, 1, 1)
-
-            if displayName ~= self.buttonData.name then
-                GameTooltip:AddLine(self.buttonData.name, 0.5, 0.5, 0.5)
-            end
-
             GameTooltip:AddLine(MO.L.CATEGORY .. ": " .. self.buttonData.category, 0.7, 0.7, 0.7)
             if self.buttonData.isFavorite then
                 GameTooltip:AddLine(MO.L.FAVORITE, 1, 0.84, 0)
