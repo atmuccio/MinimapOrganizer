@@ -181,58 +181,107 @@ function CollectionWindow:CreateWindow()
 
     -- Title bar with backdrop
     local titleBar = CreateFrame("Frame", nil, mainWindow, "BackdropTemplate")
-    titleBar:SetHeight(24)
+    titleBar:SetHeight(28)
     titleBar:SetPoint("TOPLEFT", 7, -6)
-    titleBar:SetPoint("TOPRIGHT", -26, -6)
+    titleBar:SetPoint("TOPRIGHT", -7, -6)
     titleBar:SetBackdrop(theme.titleBar)
     titleBar:SetBackdropColor(unpack(theme.titleBarColor))
     titleBar:SetBackdropBorderColor(unpack(theme.titleBarBorderColor))
     titleBar:EnableMouse(true)
-    titleBar:RegisterForDrag("LeftButton")
 
-    titleBar:SetScript("OnDragStart", function()
+    titleBar:SetScript("OnMouseDown", function()
         mainWindow:StartMoving()
     end)
 
-    titleBar:SetScript("OnDragStop", function()
+    titleBar:SetScript("OnMouseUp", function()
         mainWindow:StopMovingOrSizing()
         CollectionWindow:SavePosition()
     end)
 
-    -- Title text (centered in bar)
+    -- Title text
     local title = titleBar:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    title:SetPoint("LEFT", titleBar, "LEFT", 8, 0)
+    title:SetPoint("LEFT", titleBar, "LEFT", 10, 0)
     title:SetText(MO.L.WINDOW_TITLE)
     mainWindow.title = title
     mainWindow.titleBar = titleBar
 
     -- Close button
-    local closeBtn = CreateFrame("Button", nil, mainWindow, "UIPanelCloseButton")
-    closeBtn:SetPoint("TOPRIGHT", mainWindow, "TOPRIGHT", -5, -6)
-    closeBtn:SetScript("OnClick", function()
+    local TITLE_BTN_SIZE = 22
+    local closeBtn = CreateFrame("Button", nil, titleBar)
+    closeBtn:SetSize(TITLE_BTN_SIZE, TITLE_BTN_SIZE)
+    closeBtn:SetPoint("RIGHT", titleBar, "RIGHT", -5, 0)
+
+    local closeBtnIcon = closeBtn:CreateTexture(nil, "ARTWORK")
+    closeBtnIcon:SetSize(TITLE_BTN_SIZE, TITLE_BTN_SIZE)
+    closeBtnIcon:SetPoint("CENTER")
+    closeBtnIcon:SetAtlas("RedButton-Exit", false)
+    closeBtn.icon = closeBtnIcon
+
+    local closeBtnHighlight = closeBtn:CreateTexture(nil, "HIGHLIGHT")
+    closeBtnHighlight:SetAllPoints()
+    closeBtnHighlight:SetAtlas("RedButton-Highlight")
+    closeBtnHighlight:SetAlpha(0.5)
+    closeBtnHighlight:SetBlendMode("ADD")
+    closeBtnHighlight:SetDesaturated(true)
+
+    closeBtn:SetScript("OnMouseDown", function(self)
+        self.icon:SetAtlas("RedButton-exit-pressed", false)
+    end)
+    closeBtn:SetScript("OnMouseUp", function(self)
+        self.icon:SetAtlas("RedButton-Exit", false)
         CollectionWindow:Hide()
     end)
 
     -- Manage mode toggle button (gear icon on title bar)
     local manageBtn = CreateFrame("Button", nil, titleBar)
-    manageBtn:SetSize(16, 16)
-    manageBtn:SetPoint("RIGHT", titleBar, "RIGHT", -6, 0)
+    manageBtn:SetSize(TITLE_BTN_SIZE, TITLE_BTN_SIZE)
+    manageBtn:SetPoint("RIGHT", closeBtn, "LEFT", -5, 0)
 
     local manageBtnIcon = manageBtn:CreateTexture(nil, "ARTWORK")
-    manageBtnIcon:SetAllPoints()
-    manageBtnIcon:SetTexture("Interface\\GossipFrame\\HealerGossipIcon")
+    manageBtnIcon:SetSize(TITLE_BTN_SIZE + 4, TITLE_BTN_SIZE + 4)
+    manageBtnIcon:SetPoint("CENTER", 0, -3)
+    manageBtnIcon:SetAtlas("common-dropdown-a-button-settings-shadowless", false)
     manageBtnIcon:SetDesaturated(true)
     manageBtn.icon = manageBtnIcon
 
-    local manageBtnHighlight = manageBtn:CreateTexture(nil, "HIGHLIGHT")
-    manageBtnHighlight:SetAllPoints()
-    manageBtnHighlight:SetColorTexture(1, 1, 1, 0.2)
-
-    manageBtn:SetScript("OnClick", function()
+    manageBtn:SetScript("OnClick", function(self)
         CollectionWindow:ToggleManageMode()
+        -- Refresh tooltip to reflect new state
+        if GameTooltip:IsOwned(self) then
+            GameTooltip:ClearLines()
+            if manageMode then
+                GameTooltip:AddLine(MO.L.MANAGE_MODE_ACTIVE, 1, 0.82, 0)
+                GameTooltip:AddLine(MO.L.MANAGE_MODE_CLICK_DISABLE, 0.5, 0.5, 0.5)
+            else
+                GameTooltip:AddLine(MO.L.MANAGE_MODE, 1, 1, 1)
+                GameTooltip:AddLine(MO.L.MANAGE_MODE_CLICK_ENABLE, 0.5, 0.5, 0.5)
+            end
+            GameTooltip:Show()
+        end
+    end)
+
+    manageBtn:SetScript("OnMouseDown", function(self)
+        self.icon:SetAtlas("common-dropdown-a-button-settings-pressed-shadowless")
+        if not manageMode then
+            self.icon:SetDesaturated(true)
+        end
+    end)
+
+    manageBtn:SetScript("OnMouseUp", function(self)
+        if manageMode then
+            self.icon:SetAtlas("common-dropdown-a-button-settings-open-shadowless")
+            self.icon:SetDesaturated(false)
+        else
+            self.icon:SetAtlas("common-dropdown-a-button-settings-shadowless")
+            self.icon:SetDesaturated(true)
+        end
     end)
 
     manageBtn:SetScript("OnEnter", function(self)
+        if not manageMode then
+            self.icon:SetAtlas("common-dropdown-a-button-settings-hover-shadowless")
+            self.icon:SetDesaturated(true)
+        end
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
         if manageMode then
             GameTooltip:AddLine(MO.L.MANAGE_MODE_ACTIVE, 1, 0.82, 0)
@@ -244,7 +293,14 @@ function CollectionWindow:CreateWindow()
         GameTooltip:Show()
     end)
 
-    manageBtn:SetScript("OnLeave", function()
+    manageBtn:SetScript("OnLeave", function(self)
+        if manageMode then
+            self.icon:SetAtlas("common-dropdown-a-button-settings-open-shadowless")
+            self.icon:SetDesaturated(false)
+        else
+            self.icon:SetAtlas("common-dropdown-a-button-settings-shadowless")
+            self.icon:SetDesaturated(true)
+        end
         GameTooltip:Hide()
     end)
 
@@ -341,10 +397,13 @@ function CollectionWindow:ToggleManageMode()
 
     -- Update gear icon visual state
     if mainWindow and mainWindow.manageBtn then
-        mainWindow.manageBtn.icon:SetDesaturated(not manageMode)
         if manageMode then
+            mainWindow.manageBtn.icon:SetAtlas("common-dropdown-a-button-settings-open-shadowless")
+            mainWindow.manageBtn.icon:SetDesaturated(false)
             mainWindow.manageBtn.icon:SetVertexColor(1, 0.82, 0)
         else
+            mainWindow.manageBtn.icon:SetAtlas("common-dropdown-a-button-settings-shadowless")
+            mainWindow.manageBtn.icon:SetDesaturated(true)
             mainWindow.manageBtn.icon:SetVertexColor(1, 1, 1)
         end
     end
@@ -818,6 +877,7 @@ function CollectionWindow:Hide()
     if manageMode then
         manageMode = false
         if mainWindow.manageBtn then
+            mainWindow.manageBtn.icon:SetAtlas("common-dropdown-a-button-settings-shadowless")
             mainWindow.manageBtn.icon:SetDesaturated(true)
             mainWindow.manageBtn.icon:SetVertexColor(1, 1, 1)
         end

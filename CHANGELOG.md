@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.4.1] - UI Polish
+
+### Changed
+- Redesigned title bar buttons using native Blizzard atlas textures for a cleaner, more consistent look
+- Gear icon now uses proper hover, pressed, and active states matching Blizzard's UI style
+- Close button replaced with atlas-based version for visual consistency with gear icon
+- Manage mode tooltip now updates immediately on click without requiring mouse-off
+- Improved window dragging to prevent cursor offset issues
+
+### Fixed
+- Tooltips no longer appear when dragging the collection window over buttons
+- Window drag now anchors correctly to the cursor position
+
 ## [1.4.0] - Preserve Original Button Behavior
 
 ### Added
