@@ -103,6 +103,12 @@ function ButtonScanner:HookButton(frame)
         oSize = { frame:GetWidth(), frame:GetHeight() },
         oAlpha = frame:GetAlpha(),  -- Store original alpha for restoration
         isVisible = frame:IsVisible(),
+        -- Store original scripts for forwarding in normal mode
+        oOnEnter = frame:HasScript("OnEnter") and frame:GetScript("OnEnter") or nil,
+        oOnLeave = frame:HasScript("OnLeave") and frame:GetScript("OnLeave") or nil,
+        oOnClick = frame:HasScript("OnClick") and frame:GetScript("OnClick") or nil,
+        oOnMouseUp = frame:HasScript("OnMouseUp") and frame:GetScript("OnMouseUp") or nil,
+        oOnMouseDown = frame:HasScript("OnMouseDown") and frame:GetScript("OnMouseDown") or nil,
     }
 
     -- Hook Show
