@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.5.0] - 2026-04-21
+
+### Changed
+- Updated Interface version to 120005 for WoW 12.0.5 (Lingering Shadows)
+- Fixed addon version string being out of sync between TOC and runtime
+
 ## [1.4.0] - Preserve Original Button Behavior
 
 ### Added
