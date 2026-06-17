@@ -111,20 +111,18 @@ jobs:
             printf '\n'
           } > body.md
 
-          cat >> body.md <<'EOF'
-### Update checklist (`/wow-patch-update`)
-
-- [ ] Confirm the interface number on Warcraft Wiki
-- [ ] Review the API changes page for anything affecting this addon
-- [ ] Bump `## Interface:` in the `.toc`
-- [ ] Bump `## Version:` and any hardcoded runtime version string
-- [ ] Apply code fixes if any removed/deprecated APIs are in use (see scan above)
-- [ ] Add a `CHANGELOG.md` entry
-- [ ] Commit, PR, merge, tag, and verify the release workflow
-
----
-_Opened automatically by the WoW Patch Watch workflow. The API scan is a best-effort heuristic — always verify against the linked API changes page._
-EOF
+          {
+            printf '### Update checklist (`/wow-patch-update`)\n\n'
+            printf -- '- [ ] Confirm the interface number on Warcraft Wiki\n'
+            printf -- '- [ ] Review the API changes page for anything affecting this addon\n'
+            printf -- '- [ ] Bump `## Interface:` in the `.toc`\n'
+            printf -- '- [ ] Bump `## Version:` and any hardcoded runtime version string\n'
+            printf -- '- [ ] Apply code fixes if any removed/deprecated APIs are in use (see scan above)\n'
+            printf -- '- [ ] Add a `CHANGELOG.md` entry\n'
+            printf -- '- [ ] Commit, PR, merge, tag, and verify the release workflow\n\n'
+            printf -- '---\n'
+            printf '_Opened automatically by the WoW Patch Watch workflow. The API scan is a best-effort heuristic — always verify against the linked API changes page._\n'
+          } >> body.md
 
           gh label create wow-patch --color FFA500 --description "WoW patch compatibility" 2>/dev/null
           TITLE="WoW $PATCH — Interface $LATEST available (addon update needed)"
