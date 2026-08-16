@@ -1,6 +1,6 @@
 name: WoW Patch Watch
 
-# Dependabot-style watcher: once a day, check whether the live retail WoW
+# Dependabot-style watcher: on patch days (Tue/Wed), check whether the live retail WoW
 # interface number has moved ahead of this addon's .toc. If (and only if) it
 # has, gather the patch's removed/deprecated APIs, scan this addon's Lua for
 # them, and open a tracking issue. Otherwise it exits cheaply with no changes.
@@ -8,8 +8,10 @@ name: WoW Patch Watch
 on:
   schedule:
     # 10:00 UTC = 05:00 America/Chicago (CDT). GitHub cron is UTC only, so this
-    # lands at 04:00 Central during CST (winter). Daily, to cover any patch day.
-    - cron: '0 10 * * *'
+    # lands at 04:00 Central during CST (winter). Tuesday + Wednesday only:
+    # WoW retail patches go live Tuesday afternoon US time, so the Wednesday
+    # run catches anything that dropped after Tuesday's run.
+    - cron: '0 10 * * 2,3'
   workflow_dispatch: {}
 
 permissions:
@@ -28,6 +30,7 @@ jobs:
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: |
           set +e  # best-effort scan; we handle failures explicitly
 
@@ -129,3 +132,16 @@ jobs:
           URL=$(gh issue create --title "$TITLE" --body-file body.md --label wow-patch 2>/dev/null \
                 || gh issue create --title "$TITLE" --body-file body.md)
           echo "Opened issue: $URL"
+
+          # Notify Discord directly. The Discord Notifications workflow can't do
+          # this for us: issues opened via GITHUB_TOKEN don't trigger further
+          # workflow runs (GitHub's loop-prevention rule), so we post here.
+          if [ -n "${DISCORD_WEBHOOK:-}" ] && [ -n "$URL" ]; then
+            PAYLOAD=$(jq -n \
+              --arg title "🔼 WoW $PATCH — addon update needed" \
+              --arg desc "**$ADDON** is on interface \`$CURRENT\`; live retail is now \`$LATEST\` (patch $PATCH, build \`$VERSION\`). A tracking issue has been opened." \
+              --arg url "$URL" \
+              '{embeds:[{title:$title, description:$desc, url:$url, color:15105570}]}')
+            curl -s -H "Content-Type: application/json" -d "$PAYLOAD" "$DISCORD_WEBHOOK" >/dev/null \
+              && echo "Sent Discord notification." || echo "Discord notification failed (non-fatal)."
+          fi
