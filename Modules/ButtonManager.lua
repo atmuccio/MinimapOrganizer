@@ -220,8 +220,17 @@ function ButtonManager:RenameCategory(oldName, newName)
 end
 
 -- Get sorted list of buttons for display
-function ButtonManager:GetSortedButtons(filterCategory)
+function ButtonManager:GetSortedButtons(filterCategory, searchTerm)
     local buttons = {}
+
+    -- Normalize search term once
+    local search = nil
+    if searchTerm and type(searchTerm) == "string" then
+        local trimmed = searchTerm:match("^%s*(.-)%s*$")
+        if trimmed and trimmed ~= "" then
+            search = trimmed:lower()
+        end
+    end
 
     -- Gather all collected buttons that are visible
     for buttonName in pairs(MO.db.collectedButtons) do
@@ -230,9 +239,27 @@ function ButtonManager:GetSortedButtons(filterCategory)
             -- Check visibility - include if the addon considers it visible
             if frame._mo.isVisible then
                 local category = MO.db.buttonCategories[buttonName] or "Uncategorized"
+                local isFav = MO.db.favorites[buttonName] == true
 
-                -- Apply category filter if specified
-                if not filterCategory or filterCategory == "All" or category == filterCategory then
+                -- Apply category filter if specified. "__favorites__" is a
+                -- pseudo-category that includes any favorited button regardless
+                -- of its real category.
+                local passesCategory
+                if filterCategory == "__favorites__" then
+                    passesCategory = isFav
+                else
+                    passesCategory = not filterCategory or filterCategory == "All" or category == filterCategory
+                end
+
+                -- Apply search filter against raw name and friendly display name
+                local passesSearch = true
+                if search then
+                    local displayName = MO.Utils.GetAddonDisplayName(buttonName) or ""
+                    passesSearch = buttonName:lower():find(search, 1, true) ~= nil
+                        or displayName:lower():find(search, 1, true) ~= nil
+                end
+
+                if passesCategory and passesSearch then
                     table.insert(buttons, {
                         name = buttonName,
                         frame = frame,

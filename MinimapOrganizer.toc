@@ -32,5 +32,6 @@ Modules\ButtonManager.lua
 
 # UI
 UI\MinimapButton.lua
+UI\Skins.lua
 UI\CollectionWindow.lua
 UI\Settings.lua
