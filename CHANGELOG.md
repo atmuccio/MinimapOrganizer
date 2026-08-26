@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.6.0] - 2026-08-26
+
+### Added
+- **Search bar** in the collection window's top row — case-insensitive matching against both raw frame names and friendly addon display names
+- **Favorites filter** — new selectable option in the category dropdown that shows only favorited buttons regardless of category
+- **Modern portrait chrome** — main frame now inherits Blizzard's `ButtonFrameTemplate` for the clean modern header look (portrait and footer button bar hidden)
+- **Settings menu** — the title-bar gear icon now opens a small dropdown with a Manage Mode toggle and a link into the WoW settings panel
+- **Themes rebuilt on a Skins module** — Default / Dark / Minimal / Transparent, applied via texture tinting so themes work with the modern chrome
+- **Window Opacity slider** — separate from theme, multiplies the theme's own alpha (30%–100%)
+- **Shipped icon assets** — filter funnel and settings gear PNGs rendered in-house
+
+### Changed
+- Merged "Hide Category Filter" and "Hide Search Bar" settings into a single **Hide Search and Filter** toggle (migration handles existing values)
+- All ten supported locales updated with translations for the new UI strings
+
+### Fixed
+- Belt-and-suspenders guard in `ButtonScanner.HookButton` ensures no code path can hook a `SYSTEM_IGNORE` frame like `ExpansionLandingPageMinimapButton`
+
 ## [1.5.2] - 2026-08-16
 
 ### Changed
