@@ -6,120 +6,19 @@ local CollectionWindow = MO.CollectionWindow
 local mainWindow = nil
 local buttonSlots = {}
 local categoryFilter = "All"
+local searchFilter = ""
 local headerFrames = {}
 local HEADER_HEIGHT = 20
 local manageMode = false
 
--- Theme definitions
-local THEMES = {
-    Default = {
-        backdrop = {
-            bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
-            edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
-            tile = true,
-            tileEdge = true,
-            tileSize = 32,
-            edgeSize = 32,
-            insets = { left = 11, right = 12, top = 12, bottom = 11 },
-        },
-        backgroundColor = { 0, 0, 0 },
-        borderColor = { 1, 1, 1, 1 },
-        titleBar = {
-            bgFile = "Interface\\Buttons\\WHITE8X8",
-            edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-            tile = true,
-            tileSize = 8,
-            edgeSize = 12,
-            insets = { left = 2, right = 2, top = 2, bottom = 2 },
-        },
-        titleBarColor = { 0.1, 0.1, 0.1, 0.8 },
-        titleBarBorderColor = { 0.3, 0.3, 0.3, 1 },
-    },
-    Dark = {
-        backdrop = {
-            bgFile = "Interface\\Buttons\\WHITE8X8",
-            edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-            tile = true,
-            tileEdge = true,
-            tileSize = 8,
-            edgeSize = 16,
-            insets = { left = 4, right = 4, top = 4, bottom = 4 },
-        },
-        backgroundColor = { 0.05, 0.05, 0.05 },
-        borderColor = { 0.2, 0.2, 0.2, 1 },
-        titleBar = {
-            bgFile = "Interface\\Buttons\\WHITE8X8",
-            edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-            tile = true,
-            tileSize = 8,
-            edgeSize = 12,
-            insets = { left = 2, right = 2, top = 2, bottom = 2 },
-        },
-        titleBarColor = { 0.08, 0.08, 0.08, 0.95 },
-        titleBarBorderColor = { 0.15, 0.15, 0.15, 1 },
-    },
-    Transparent = {
-        backdrop = {
-            bgFile = "Interface\\Buttons\\WHITE8X8",
-            edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-            tile = true,
-            tileEdge = true,
-            tileSize = 8,
-            edgeSize = 16,
-            insets = { left = 4, right = 4, top = 4, bottom = 4 },
-        },
-        backgroundColor = { 0, 0, 0 },
-        borderColor = { 0.4, 0.4, 0.4, 0.8 },
-        titleBar = {
-            bgFile = "Interface\\Buttons\\WHITE8X8",
-            edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-            tile = true,
-            tileSize = 8,
-            edgeSize = 12,
-            insets = { left = 2, right = 2, top = 2, bottom = 2 },
-        },
-        titleBarColor = { 0.1, 0.1, 0.1, 0.6 },
-        titleBarBorderColor = { 0.3, 0.3, 0.3, 0.8 },
-    },
-    Minimal = {
-        backdrop = {
-            bgFile = "Interface\\Buttons\\WHITE8X8",
-            edgeFile = "Interface\\Buttons\\WHITE8X8",
-            tile = true,
-            tileEdge = true,
-            tileSize = 8,
-            edgeSize = 1,
-            insets = { left = 1, right = 1, top = 1, bottom = 1 },
-        },
-        backgroundColor = { 0.1, 0.1, 0.1 },
-        borderColor = { 0.3, 0.3, 0.3, 1 },
-        titleBar = {
-            bgFile = "Interface\\Buttons\\WHITE8X8",
-            edgeFile = "Interface\\Buttons\\WHITE8X8",
-            tile = true,
-            tileSize = 8,
-            edgeSize = 1,
-            insets = { left = 1, right = 1, top = 1, bottom = 1 },
-        },
-        titleBarColor = { 0.15, 0.15, 0.15, 0.9 },
-        titleBarBorderColor = { 0.3, 0.3, 0.3, 1 },
-    },
-}
-
--- Get available theme names
-function CollectionWindow:GetThemeNames()
-    local names = {}
-    for name in pairs(THEMES) do
-        table.insert(names, name)
-    end
-    table.sort(names)
-    return names
-end
-
--- Get a theme by name
-function CollectionWindow:GetTheme(name)
-    return THEMES[name] or THEMES["Default"]
-end
+-- Minimum widths for top-row controls, used to enforce a floor on window
+-- content width so search + filter don't overlap on narrow layouts.
+local FILTER_BTN_WIDTH = 22
+local SEARCH_BOX_MIN = 120
+-- Horizontal inset from the frame edge to the content area. ButtonFrameTemplate
+-- has ~6px of chrome inset on each side; SIDE_INSET adds visible breathing
+-- room so headers, buttons, search box, and filter all line up consistently.
+local SIDE_INSET = 16
 
 -- Initialize the collection window
 function CollectionWindow:Initialize()
@@ -127,43 +26,21 @@ function CollectionWindow:Initialize()
     MO.Utils.Debug("CollectionWindow initialized")
 end
 
--- Apply theme to the window
+-- Apply the current theme via the Skins module.
 function CollectionWindow:ApplyTheme()
-    if not mainWindow then return end
-
-    local theme = self:GetTheme(MO.db.window.theme)
-    local opacity = MO.db.window.opacity or 0.9
-
-    -- Apply main window backdrop
-    mainWindow:SetBackdrop(theme.backdrop)
-    mainWindow:SetBackdropColor(theme.backgroundColor[1], theme.backgroundColor[2], theme.backgroundColor[3], opacity)
-    mainWindow:SetBackdropBorderColor(unpack(theme.borderColor))
-
-    -- Apply title bar backdrop
-    if mainWindow.titleBar then
-        mainWindow.titleBar:SetBackdrop(theme.titleBar)
-        mainWindow.titleBar:SetBackdropColor(unpack(theme.titleBarColor))
-        mainWindow.titleBar:SetBackdropBorderColor(unpack(theme.titleBarBorderColor))
+    if mainWindow and MO.Skins then
+        MO.Skins:Apply(mainWindow, MO.db.window.theme)
     end
 end
 
--- Update opacity only (without full theme reapply)
-function CollectionWindow:UpdateOpacity()
-    if not mainWindow then return end
+-- Kept as a no-op so any older Settings callers still work.
+function CollectionWindow:UpdateOpacity() end
 
-    local theme = self:GetTheme(MO.db.window.theme)
-    local opacity = MO.db.window.opacity or 0.9
-
-    mainWindow:SetBackdropColor(theme.backgroundColor[1], theme.backgroundColor[2], theme.backgroundColor[3], opacity)
-end
-
--- Create the main window
+-- Create the main window (Blizzard modern portrait-style panel)
 function CollectionWindow:CreateWindow()
-    local theme = self:GetTheme(MO.db.window.theme)
-    local opacity = MO.db.window.opacity or 0.9
-
-    -- Main frame
-    mainWindow = CreateFrame("Frame", "MinimapOrganizer_CollectionWindow", UIParent, "BackdropTemplate")
+    -- Main frame uses ButtonFrameTemplate for the modern portrait-header look.
+    -- Portrait and footer button-bar are hidden for the clean minimalist chrome.
+    mainWindow = CreateFrame("Frame", "MinimapOrganizer_CollectionWindow", UIParent, "ButtonFrameTemplate")
     mainWindow:SetPoint(MO.db.window.point, UIParent, MO.db.window.relativePoint, MO.db.window.x, MO.db.window.y)
     mainWindow:SetScale(MO.db.window.scale)
     mainWindow:SetMovable(true)
@@ -171,219 +48,261 @@ function CollectionWindow:CreateWindow()
     mainWindow:EnableMouse(true)
     mainWindow:SetFrameStrata("MEDIUM")
     mainWindow:SetFrameLevel(100)
-    mainWindow:SetBackdrop(theme.backdrop)
-    mainWindow:SetBackdropColor(theme.backgroundColor[1], theme.backgroundColor[2], theme.backgroundColor[3], opacity)
-    mainWindow:SetBackdropBorderColor(unpack(theme.borderColor))
     mainWindow:Hide()
 
-    -- Register for escape to close
-    tinsert(UISpecialFrames, "MinimapOrganizer_CollectionWindow")
+    if ButtonFrameTemplate_HidePortrait then
+        ButtonFrameTemplate_HidePortrait(mainWindow)
+    end
+    if ButtonFrameTemplate_HideButtonBar then
+        ButtonFrameTemplate_HideButtonBar(mainWindow)
+    end
+    if mainWindow.Inset then
+        mainWindow.Inset:Hide()
+    end
 
-    -- Title bar with backdrop
-    local titleBar = CreateFrame("Frame", nil, mainWindow, "BackdropTemplate")
-    titleBar:SetHeight(28)
-    titleBar:SetPoint("TOPLEFT", 7, -6)
-    titleBar:SetPoint("TOPRIGHT", -7, -6)
-    titleBar:SetBackdrop(theme.titleBar)
-    titleBar:SetBackdropColor(unpack(theme.titleBarColor))
-    titleBar:SetBackdropBorderColor(unpack(theme.titleBarBorderColor))
-    titleBar:EnableMouse(true)
+    -- Flat title fill used when a theme hides the beveled border art (Minimal).
+    -- Inset 6px on each side to match ButtonFrameTemplate's chrome inset,
+    -- so the strip lines up with frame.Bg's left/right extent.
+    local titleStrip = mainWindow:CreateTexture(nil, "BORDER")
+    titleStrip:SetColorTexture(1, 1, 1, 1)
+    titleStrip:SetPoint("TOPLEFT", 7, 0)
+    titleStrip:SetPoint("TOPRIGHT", -7, 0)
+    titleStrip:SetHeight(24)
+    titleStrip:Hide()
+    mainWindow.minimalTitleStrip = titleStrip
 
-    titleBar:SetScript("OnMouseDown", function()
-        mainWindow:StartMoving()
-    end)
-
-    titleBar:SetScript("OnMouseUp", function()
-        mainWindow:StopMovingOrSizing()
+    -- Whole-frame drag (template already reserves the top strip for header art)
+    mainWindow:RegisterForDrag("LeftButton")
+    mainWindow:SetScript("OnDragStart", function(self) self:StartMoving() end)
+    mainWindow:SetScript("OnDragStop", function(self)
+        self:StopMovingOrSizing()
         CollectionWindow:SavePosition()
     end)
 
-    -- Title text
-    local title = titleBar:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    title:SetPoint("LEFT", titleBar, "LEFT", 10, 0)
-    title:SetText(MO.L.WINDOW_TITLE)
-    mainWindow.title = title
-    mainWindow.titleBar = titleBar
+    -- Title
+    if mainWindow.SetTitle then
+        mainWindow:SetTitle(MO.L.WINDOW_TITLE)
+    elseif mainWindow.TitleText then
+        mainWindow.TitleText:SetText(MO.L.WINDOW_TITLE)
+    end
 
-    -- Close button
-    local TITLE_BTN_SIZE = 22
-    local closeBtn = CreateFrame("Button", nil, titleBar)
-    closeBtn:SetSize(TITLE_BTN_SIZE, TITLE_BTN_SIZE)
-    closeBtn:SetPoint("RIGHT", titleBar, "RIGHT", -5, 0)
+    -- Escape to close
+    tinsert(UISpecialFrames, "MinimapOrganizer_CollectionWindow")
 
-    local closeBtnIcon = closeBtn:CreateTexture(nil, "ARTWORK")
-    closeBtnIcon:SetSize(TITLE_BTN_SIZE, TITLE_BTN_SIZE)
-    closeBtnIcon:SetPoint("CENTER")
-    closeBtnIcon:SetAtlas("RedButton-Exit", false)
-    closeBtn.icon = closeBtnIcon
+    -- Close button — HookScript preserves the template's default (which plays
+    -- the standard close sound); our hook runs the cleanup after.
+    if mainWindow.CloseButton then
+        mainWindow.CloseButton:HookScript("OnClick", function()
+            CollectionWindow:Hide()
+        end)
+    end
 
-    local closeBtnHighlight = closeBtn:CreateTexture(nil, "HIGHLIGHT")
-    closeBtnHighlight:SetAllPoints()
-    closeBtnHighlight:SetAtlas("RedButton-Highlight")
-    closeBtnHighlight:SetAlpha(0.5)
-    closeBtnHighlight:SetBlendMode("ADD")
-    closeBtnHighlight:SetDesaturated(true)
+    -- Manage mode gear button (sits immediately left of the built-in close X)
+    self:CreateManageButton(mainWindow)
 
-    closeBtn:SetScript("OnMouseDown", function(self)
-        self.icon:SetAtlas("RedButton-exit-pressed", false)
-    end)
-    closeBtn:SetScript("OnMouseUp", function(self)
-        self.icon:SetAtlas("RedButton-Exit", false)
-        CollectionWindow:Hide()
-    end)
+    -- Search box (LEFT side of top row)
+    self:CreateSearchBox(mainWindow)
 
-    -- Manage mode toggle button (gear icon on title bar)
-    local manageBtn = CreateFrame("Button", nil, titleBar)
-    manageBtn:SetSize(TITLE_BTN_SIZE, TITLE_BTN_SIZE)
-    manageBtn:SetPoint("RIGHT", closeBtn, "LEFT", -5, 0)
-
-    local manageBtnIcon = manageBtn:CreateTexture(nil, "ARTWORK")
-    manageBtnIcon:SetSize(TITLE_BTN_SIZE + 4, TITLE_BTN_SIZE + 4)
-    manageBtnIcon:SetPoint("CENTER", 0, -3)
-    manageBtnIcon:SetAtlas("common-dropdown-a-button-settings-shadowless", false)
-    manageBtnIcon:SetDesaturated(true)
-    manageBtn.icon = manageBtnIcon
-
-    manageBtn:SetScript("OnClick", function(self)
-        CollectionWindow:ToggleManageMode()
-        -- Refresh tooltip to reflect new state
-        if GameTooltip:IsOwned(self) then
-            GameTooltip:ClearLines()
-            if manageMode then
-                GameTooltip:AddLine(MO.L.MANAGE_MODE_ACTIVE, 1, 0.82, 0)
-                GameTooltip:AddLine(MO.L.MANAGE_MODE_CLICK_DISABLE, 0.5, 0.5, 0.5)
-            else
-                GameTooltip:AddLine(MO.L.MANAGE_MODE, 1, 1, 1)
-                GameTooltip:AddLine(MO.L.MANAGE_MODE_CLICK_ENABLE, 0.5, 0.5, 0.5)
-            end
-            GameTooltip:Show()
-        end
-    end)
-
-    manageBtn:SetScript("OnMouseDown", function(self)
-        self.icon:SetAtlas("common-dropdown-a-button-settings-pressed-shadowless")
-        if not manageMode then
-            self.icon:SetDesaturated(true)
-        end
-    end)
-
-    manageBtn:SetScript("OnMouseUp", function(self)
-        if manageMode then
-            self.icon:SetAtlas("common-dropdown-a-button-settings-open-shadowless")
-            self.icon:SetDesaturated(false)
-        else
-            self.icon:SetAtlas("common-dropdown-a-button-settings-shadowless")
-            self.icon:SetDesaturated(true)
-        end
-    end)
-
-    manageBtn:SetScript("OnEnter", function(self)
-        if not manageMode then
-            self.icon:SetAtlas("common-dropdown-a-button-settings-hover-shadowless")
-            self.icon:SetDesaturated(true)
-        end
-        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-        if manageMode then
-            GameTooltip:AddLine(MO.L.MANAGE_MODE_ACTIVE, 1, 0.82, 0)
-            GameTooltip:AddLine(MO.L.MANAGE_MODE_CLICK_DISABLE, 0.5, 0.5, 0.5)
-        else
-            GameTooltip:AddLine(MO.L.MANAGE_MODE, 1, 1, 1)
-            GameTooltip:AddLine(MO.L.MANAGE_MODE_CLICK_ENABLE, 0.5, 0.5, 0.5)
-        end
-        GameTooltip:Show()
-    end)
-
-    manageBtn:SetScript("OnLeave", function(self)
-        if manageMode then
-            self.icon:SetAtlas("common-dropdown-a-button-settings-open-shadowless")
-            self.icon:SetDesaturated(false)
-        else
-            self.icon:SetAtlas("common-dropdown-a-button-settings-shadowless")
-            self.icon:SetDesaturated(true)
-        end
-        GameTooltip:Hide()
-    end)
-
-    mainWindow.manageBtn = manageBtn
-
-    -- Category filter dropdown
+    -- Category filter (RIGHT side of top row) — icon-only DropdownButton
     self:CreateCategoryDropdown(mainWindow)
 
     -- Content area (where buttons go)
     local content = CreateFrame("Frame", nil, mainWindow)
-    content:SetPoint("TOPLEFT", 16, -64)
-    content:SetPoint("BOTTOMRIGHT", -16, 16)
+    content:SetPoint("TOPLEFT", SIDE_INSET, -58)
+    content:SetPoint("BOTTOMRIGHT", -SIDE_INSET, SIDE_INSET)
     mainWindow.content = content
 
     self.mainWindow = mainWindow
 
-    -- Apply initial filter visibility
-    self:UpdateFilterVisibility()
+    -- Apply theme + initial top-row visibility
+    self:ApplyTheme()
+    self:UpdateTopRowVisibility()
 end
 
--- Create category filter dropdown
+-- Create the settings/manage button — Plumber-style plain button (no template,
+-- no chrome), just an icon overlay with alpha + press-offset feedback. Opens
+-- a small menu with Manage Mode toggle and a link to the WoW settings panel.
+function CollectionWindow:CreateManageButton(parent)
+    local manageBtn = CreateFrame("DropdownButton", nil, parent)
+    manageBtn:SetSize(22, 22)
+    if parent.CloseButton then
+        manageBtn:SetPoint("RIGHT", parent.CloseButton, "LEFT", -2, 0)
+        manageBtn:SetFrameLevel(parent.CloseButton:GetFrameLevel() + 1)
+    else
+        manageBtn:SetPoint("TOPRIGHT", parent, "TOPRIGHT", -28, -3)
+    end
+
+    -- Shipped anti-aliased gear (64x64 PNG). Tinted warm off-white to match
+    -- the muted filter icon on the row below. Slightly smaller than the
+    -- 22x22 button and offset a hair to give breathing room from the title
+    -- bar boundary.
+    local gear = manageBtn:CreateTexture(nil, "OVERLAY")
+    gear:SetSize(15, 15)
+    gear:SetPoint("CENTER", 0, 0)
+    gear:SetTexture("Interface\\AddOns\\MinimapOrganizer\\Assets\\SettingsIcon.png")
+    gear:SetVertexColor(0.85, 0.8, 0.65)
+    gear:SetAlpha(0.67)
+    manageBtn.icon = gear
+
+    manageBtn:SetupMenu(function(menu, rootDescription)
+        rootDescription:CreateCheckbox(
+            MO.L.MANAGE_MODE,
+            function() return manageMode end,
+            function() CollectionWindow:ToggleManageMode() end
+        )
+        rootDescription:CreateDivider()
+        rootDescription:CreateButton(MO.L.SETTINGS or "Settings...", function()
+            MO.Settings:Open()
+        end)
+    end)
+
+    manageBtn:HookScript("OnEnter", function(self)
+        self.icon:SetAlpha(1)
+        GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT")
+        GameTooltip:AddLine(MO.L.SETTINGS_MENU or "Options", 1, 1, 1)
+        GameTooltip:Show()
+    end)
+    manageBtn:HookScript("OnLeave", function(self)
+        self.icon:SetAlpha(manageMode and 1 or 0.67)
+        GameTooltip:Hide()
+    end)
+    manageBtn:HookScript("OnMouseDown", function(self)
+        self.icon:ClearAllPoints()
+        self.icon:SetPoint("CENTER", 1, -1)
+    end)
+    manageBtn:HookScript("OnMouseUp", function(self)
+        self.icon:ClearAllPoints()
+        self.icon:SetPoint("CENTER")
+    end)
+
+    mainWindow.manageBtn = manageBtn
+end
+
+-- Create category filter — Plumber-style plain button on the top-row right,
+-- shipping our own filter icon (three sliders + knobs). No template/chrome;
+-- icon alpha lifts on hover and offsets by 1px on press.
 function CollectionWindow:CreateCategoryDropdown(parent)
-    local dropdown = CreateFrame("Frame", "MinimapOrganizer_CategoryDropdown", parent, "UIDropDownMenuTemplate")
-    dropdown:SetPoint("TOPLEFT", 0, -32)
+    local dropdown = CreateFrame("DropdownButton", "MinimapOrganizer_CategoryDropdown", parent)
+    dropdown:SetSize(22, 22)
+    dropdown:SetPoint("TOPRIGHT", parent, "TOPRIGHT", -SIDE_INSET, -26)
 
-    UIDropDownMenu_SetWidth(dropdown, 120)
-    UIDropDownMenu_SetText(dropdown, MO.L.ALL_CATEGORIES)
+    -- Shipped funnel icon (64x64 anti-aliased PNG), warm muted tint
+    local icon = dropdown:CreateTexture(nil, "OVERLAY")
+    icon:SetSize(16, 16)
+    icon:SetPoint("CENTER")
+    icon:SetTexture("Interface\\AddOns\\MinimapOrganizer\\Assets\\FilterIcon.png")
+    icon:SetVertexColor(0.75, 0.7, 0.55)
+    icon:SetAlpha(0.67)
+    dropdown.icon = icon
 
-    UIDropDownMenu_Initialize(dropdown, function(self, level)
-        local info = UIDropDownMenu_CreateInfo()
+    local function IsSelected(value)
+        return categoryFilter == value
+    end
+    local function SetSelected(value)
+        categoryFilter = value
+        CollectionWindow:RefreshLayout()
+    end
 
-        -- "All" option
-        info.text = MO.L.ALL_CATEGORIES
-        info.value = "All"
-        info.checked = (categoryFilter == "All")
-        info.func = function()
-            categoryFilter = "All"
-            UIDropDownMenu_SetText(dropdown, MO.L.ALL_CATEGORIES)
-            CollectionWindow:RefreshLayout()
-        end
-        UIDropDownMenu_AddButton(info)
+    dropdown:SetupMenu(function(menu, rootDescription)
+        rootDescription:CreateRadio(MO.L.ALL_CATEGORIES, IsSelected, SetSelected, "All")
+        rootDescription:CreateRadio("|cffffd200" .. MO.L.FAVORITES .. "|r", IsSelected, SetSelected, "__favorites__")
+        rootDescription:CreateDivider()
 
-        -- Separator
-        info = UIDropDownMenu_CreateInfo()
-        info.disabled = true
-        info.notCheckable = true
-        UIDropDownMenu_AddButton(info)
-
-        -- Category options
         local categories = MO.ButtonManager:GetCategories()
         for _, cat in ipairs(categories) do
-            info = UIDropDownMenu_CreateInfo()
-            info.text = cat.name
-            info.value = cat.name
-            info.checked = (categoryFilter == cat.name)
-            info.colorCode = string.format("|cff%02x%02x%02x",
+            local color = string.format("|cff%02x%02x%02x",
                 math.floor(cat.color[1] * 255),
                 math.floor(cat.color[2] * 255),
                 math.floor(cat.color[3] * 255))
-            info.func = function()
-                categoryFilter = cat.name
-                UIDropDownMenu_SetText(dropdown, cat.name)
-                CollectionWindow:RefreshLayout()
-            end
-            UIDropDownMenu_AddButton(info)
+            rootDescription:CreateRadio(color .. cat.name .. "|r", IsSelected, SetSelected, cat.name)
         end
+    end)
+
+    dropdown:HookScript("OnEnter", function(self)
+        self.icon:SetAlpha(1)
+        GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT")
+        GameTooltip:AddLine(MO.L.FILTER_BY_CATEGORY or "Filter by Category", 1, 1, 1)
+        local current
+        if categoryFilter == "All" then
+            current = MO.L.ALL_CATEGORIES
+        elseif categoryFilter == "__favorites__" then
+            current = MO.L.FAVORITES
+        else
+            current = categoryFilter
+        end
+        GameTooltip:AddLine(current, 0.7, 0.7, 0.7)
+        GameTooltip:Show()
+    end)
+    dropdown:HookScript("OnLeave", function(self)
+        self.icon:SetAlpha(0.67)
+        GameTooltip:Hide()
+    end)
+    dropdown:HookScript("OnMouseDown", function(self)
+        self.icon:ClearAllPoints()
+        self.icon:SetPoint("CENTER", 1, -1)
+    end)
+    dropdown:HookScript("OnMouseUp", function(self)
+        self.icon:ClearAllPoints()
+        self.icon:SetPoint("CENTER")
     end)
 
     mainWindow.categoryDropdown = dropdown
 end
 
--- Update filter dropdown visibility based on settings
-function CollectionWindow:UpdateFilterVisibility()
+-- Create search box (top row, LEFT side, matches 22px height of icon buttons).
+-- The right edge is set in UpdateTopRowVisibility depending on whether the
+-- category filter button is visible.
+function CollectionWindow:CreateSearchBox(parent)
+    local searchBox = CreateFrame("EditBox", "MinimapOrganizer_SearchBox", parent, "SearchBoxTemplate")
+    searchBox:SetHeight(22)
+    searchBox:SetAutoFocus(false)
+    searchBox:SetMaxLetters(64)
+
+    -- SearchBoxTemplate ships with a "Search" placeholder; override for locale
+    if searchBox.Instructions then
+        searchBox.Instructions:SetText(MO.L.SEARCH_PLACEHOLDER)
+    end
+
+    searchBox:SetScript("OnTextChanged", function(self, userInput)
+        if SearchBoxTemplate_OnTextChanged then
+            SearchBoxTemplate_OnTextChanged(self)
+        end
+        searchFilter = self:GetText() or ""
+        if mainWindow and mainWindow:IsShown() then
+            CollectionWindow:RefreshLayout()
+        end
+    end)
+
+    searchBox:SetScript("OnEscapePressed", function(self)
+        self:SetText("")
+        self:ClearFocus()
+    end)
+
+    mainWindow.searchBox = searchBox
+end
+
+-- Update top-row control visibility. Search box + category filter are
+-- toggled together via a single hideTopRow setting.
+function CollectionWindow:UpdateTopRowVisibility()
     if not mainWindow then return end
 
-    local hide = MO.db.window.hideFilter
+    local hide = MO.db.window.hideTopRow
+
     if hide then
         mainWindow.categoryDropdown:Hide()
+        mainWindow.searchBox:Hide()
         categoryFilter = "All"
-        mainWindow.content:SetPoint("TOPLEFT", 16, -36)
+        searchFilter = ""
+        mainWindow.searchBox:SetText("")
+        mainWindow.content:SetPoint("TOPLEFT", SIDE_INSET, -32)
     else
         mainWindow.categoryDropdown:Show()
-        mainWindow.content:SetPoint("TOPLEFT", 16, -64)
+        mainWindow.searchBox:Show()
+        mainWindow.searchBox:ClearAllPoints()
+        -- Left edge aligns with the header divider lines (content.LEFT + 4)
+        mainWindow.searchBox:SetPoint("TOPLEFT", mainWindow, "TOPLEFT", SIDE_INSET + 4, -26)
+        mainWindow.searchBox:SetPoint("RIGHT", mainWindow.categoryDropdown, "LEFT", -6, 0)
+        mainWindow.content:SetPoint("TOPLEFT", SIDE_INSET, -58)
     end
 
     if mainWindow:IsShown() then
@@ -391,20 +310,17 @@ function CollectionWindow:UpdateFilterVisibility()
     end
 end
 
--- Toggle manage mode
+-- Toggle manage mode. Tint the gear gold while manage mode is active so
+-- it's obvious the collection is in a special state; otherwise restore the
+-- resting warm off-white tint.
 function CollectionWindow:ToggleManageMode()
     manageMode = not manageMode
 
-    -- Update gear icon visual state
-    if mainWindow and mainWindow.manageBtn then
+    if mainWindow and mainWindow.manageBtn and mainWindow.manageBtn.icon then
         if manageMode then
-            mainWindow.manageBtn.icon:SetAtlas("common-dropdown-a-button-settings-open-shadowless")
-            mainWindow.manageBtn.icon:SetDesaturated(false)
             mainWindow.manageBtn.icon:SetVertexColor(1, 0.82, 0)
         else
-            mainWindow.manageBtn.icon:SetAtlas("common-dropdown-a-button-settings-shadowless")
-            mainWindow.manageBtn.icon:SetDesaturated(true)
-            mainWindow.manageBtn.icon:SetVertexColor(1, 1, 1)
+            mainWindow.manageBtn.icon:SetVertexColor(0.85, 0.8, 0.65)
         end
     end
 end
@@ -428,12 +344,11 @@ local function GetOrCreateHeader(index, parent)
     text:SetPoint("CENTER", 0, 0)
     header.text = text
 
-    -- Left line (anchored to text)
+    -- Left line (anchored to text) — color is set per-header to match the section
     local leftLine = header:CreateTexture(nil, "ARTWORK")
     leftLine:SetHeight(1)
     leftLine:SetPoint("LEFT", 4, 0)
     leftLine:SetPoint("RIGHT", text, "LEFT", -8, 0)
-    leftLine:SetColorTexture(0.4, 0.4, 0.4, 0.6)
     header.leftLine = leftLine
 
     -- Right line (anchored to text)
@@ -441,7 +356,6 @@ local function GetOrCreateHeader(index, parent)
     rightLine:SetHeight(1)
     rightLine:SetPoint("LEFT", text, "RIGHT", 8, 0)
     rightLine:SetPoint("RIGHT", -4, 0)
-    rightLine:SetColorTexture(0.4, 0.4, 0.4, 0.6)
     header.rightLine = rightLine
 
     headerFrames[index] = header
@@ -453,8 +367,11 @@ function CollectionWindow:RefreshLayout()
     if not mainWindow or not mainWindow:IsShown() then return end
 
     local opts = MO.db.window
-    local heightPadding = opts.hideFilter and 48 or 76
-    local buttons, categoryBreaks = MO.ButtonManager:GetSortedButtons(categoryFilter)
+    local topRowVisible = not opts.hideTopRow
+    -- Content anchor: TOPLEFT (SIDE_INSET, -58 or -32) + BOTTOMRIGHT
+    -- (-SIDE_INSET, SIDE_INSET). Vertical chrome = 58+SIDE_INSET or 32+SIDE_INSET.
+    local heightPadding = topRowVisible and (58 + SIDE_INSET) or (32 + SIDE_INSET)
+    local buttons, categoryBreaks = MO.ButtonManager:GetSortedButtons(categoryFilter, searchFilter)
     local content = mainWindow.content
 
     -- Hide all existing slots first
@@ -485,6 +402,14 @@ function CollectionWindow:RefreshLayout()
     local contentWidth = cols * (size + spacing) - spacing
     contentWidth = math.max(contentWidth, 150)
 
+    -- Make sure the top row fits its visible controls (search + filter btn)
+    if topRowVisible then
+        local topRowMin = SEARCH_BOX_MIN + 6 + FILTER_BTN_WIDTH
+        if topRowMin > contentWidth then
+            contentWidth = topRowMin
+        end
+    end
+
     if showHeaders then
         -- Calculate positions accounting for headers
         local yOffset = 0
@@ -507,11 +432,16 @@ function CollectionWindow:RefreshLayout()
                 header.text:SetText(categoryBreaks[i])
 
                 local catData = MO.db.categories[categoryBreaks[i]]
+                local r, g, b
                 if catData and catData.color then
-                    header.text:SetTextColor(catData.color[1], catData.color[2], catData.color[3])
+                    r, g, b = catData.color[1], catData.color[2], catData.color[3]
                 else
-                    header.text:SetTextColor(0.8, 0.8, 0.8)
+                    -- Favorites section (or no category data) — soft gold
+                    r, g, b = 1, 0.82, 0
                 end
+                header.text:SetTextColor(r, g, b)
+                header.leftLine:SetColorTexture(r, g, b, 0.55)
+                header.rightLine:SetColorTexture(r, g, b, 0.55)
 
                 header:Show()
                 yOffset = yOffset + HEADER_HEIGHT + 4
@@ -538,8 +468,8 @@ function CollectionWindow:RefreshLayout()
         local contentHeight = yOffset + lastCategoryRows * (size + spacing) - spacing
         contentHeight = math.max(contentHeight, size)
 
-        -- Set window size
-        local windowWidth = contentWidth + 32
+        -- Set window size (SIDE_INSET each side matches content anchor offsets)
+        local windowWidth = contentWidth + SIDE_INSET * 2
         local windowHeight = contentHeight + heightPadding
         mainWindow:SetSize(windowWidth, windowHeight)
     else
@@ -550,8 +480,8 @@ function CollectionWindow:RefreshLayout()
         local contentHeight = rows * (size + spacing) - spacing
         contentHeight = math.max(contentHeight, size)
 
-        -- Set window size (add padding for title, dropdown, borders)
-        local windowWidth = contentWidth + 32
+        -- Set window size (SIDE_INSET each side matches content anchor offsets)
+        local windowWidth = contentWidth + SIDE_INSET * 2
         local windowHeight = contentHeight + heightPadding
 
         mainWindow:SetSize(windowWidth, windowHeight)
@@ -583,16 +513,21 @@ function CollectionWindow:GetOrCreateSlot(index)
     slot:EnableMouse(true)
     slot:RegisterForClicks("AnyUp")
 
-    -- No background - let buttons show at full opacity
-    -- The window backdrop provides enough visual context
-
-    -- Favorite indicator (small gold star in top-right corner)
-    -- Using a separate frame to ensure it's always on top
+    -- Favorite indicator: gold star with a black offset-copy drop-shadow behind
+    -- it, so the star reads clearly on both dark and bright icons without the
+    -- boxy backdrop rectangle.
     local favFrame = CreateFrame("Frame", nil, slot)
     favFrame:SetFrameStrata("HIGH")
-    favFrame:SetSize(14, 14)
+    favFrame:SetSize(15, 15)
     favFrame:SetPoint("TOPRIGHT", slot, "TOPRIGHT", 2, 2)
     favFrame:Hide()
+
+    local favShadow = favFrame:CreateTexture(nil, "OVERLAY", nil, 5)
+    favShadow:SetPoint("TOPLEFT", 1, -1)
+    favShadow:SetPoint("BOTTOMRIGHT", 1, -1)
+    favShadow:SetTexture("Interface\\COMMON\\ReputationStar")
+    favShadow:SetTexCoord(0, 0.5, 0, 0.5)
+    favShadow:SetVertexColor(0, 0, 0, 0.85)
 
     local favIcon = favFrame:CreateTexture(nil, "OVERLAY", nil, 7)
     favIcon:SetAllPoints()
@@ -601,10 +536,10 @@ function CollectionWindow:GetOrCreateSlot(index)
     favIcon:SetVertexColor(1, 0.84, 0)  -- Gold color
     slot.favFrame = favFrame
 
-    -- Highlight on hover (subtle)
+    -- Highlight on hover
     local highlight = slot:CreateTexture(nil, "HIGHLIGHT")
     highlight:SetAllPoints()
-    highlight:SetColorTexture(1, 1, 1, 0.15)
+    highlight:SetColorTexture(1, 1, 1, 0.22)
 
     -- Tooltip handler
     slot:SetScript("OnEnter", function(self)
@@ -876,10 +811,8 @@ function CollectionWindow:Hide()
     -- Reset manage mode when closing
     if manageMode then
         manageMode = false
-        if mainWindow.manageBtn then
-            mainWindow.manageBtn.icon:SetAtlas("common-dropdown-a-button-settings-shadowless")
-            mainWindow.manageBtn.icon:SetDesaturated(true)
-            mainWindow.manageBtn.icon:SetVertexColor(1, 1, 1)
+        if mainWindow.manageBtn and mainWindow.manageBtn.icon then
+            mainWindow.manageBtn.icon:SetVertexColor(0.85, 0.8, 0.65)
         end
     end
 

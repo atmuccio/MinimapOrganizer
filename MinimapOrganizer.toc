@@ -2,7 +2,7 @@
 ## Title: MinimapOrganizer
 ## Notes: Collects minimap buttons into a movable, organized window with categories and favorites
 ## Author: atmuccio
-## Version: 1.5.2
+## Version: 1.6.0
 ## SavedVariablesPerCharacter: MinimapOrganizerDB
 ## IconTexture: Interface\ICONS\Garrison_Building_Storehouse
 ## Category: Map
@@ -32,5 +32,6 @@ Modules\ButtonManager.lua
 
 # UI
 UI\MinimapButton.lua
+UI\Skins.lua
 UI\CollectionWindow.lua
 UI\Settings.lua

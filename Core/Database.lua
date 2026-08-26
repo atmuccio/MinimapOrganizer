@@ -29,9 +29,9 @@ MO.Database.defaults = {
         buttonSpacing = 4,
         scale = 1.0,
         closeOnClick = false,
+        hideTopRow = false,
         theme = "Default",
-        opacity = 0.9,
-        hideFilter = false,
+        opacity = 1.0,
     },
 
     -- Minimap button settings
@@ -115,14 +115,19 @@ end
 
 -- Handle version migrations
 function MO.Database:RunMigrations()
-    local currentVersion = MO.db.version or 0
-
-    -- Version 1 is current, no migrations needed yet
-    -- Future migrations would go here:
-    -- if currentVersion < 2 then
-    --     -- migrate to v2
-    --     MO.db.version = 2
-    -- end
+    -- Collapse the old hideFilter/hideSearch pair into a single hideTopRow.
+    -- Assign unconditionally when either legacy field exists — MergeDefaults
+    -- runs before this and always injects hideTopRow=false, so a nil-check
+    -- on hideTopRow would never fire for upgrading users.
+    if MO.db.window then
+        local hf = MO.db.window.hideFilter
+        local hs = MO.db.window.hideSearch
+        if hf ~= nil or hs ~= nil then
+            MO.db.window.hideTopRow = hf == true or hs == true
+            MO.db.window.hideFilter = nil
+            MO.db.window.hideSearch = nil
+        end
+    end
 
     MO.db.version = self.defaults.version
 end

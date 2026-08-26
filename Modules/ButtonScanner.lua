@@ -91,6 +91,10 @@ function ButtonScanner:HookButton(frame)
     local name = frame:GetName()
     if not name then return end
 
+    -- Never hook system frames, even if called from a code path that
+    -- forgot the check upstream
+    if MO:IsSystemButton(name) then return end
+
     MO.Utils.Debug("Hooking button: " .. name)
 
     -- Store original methods and state

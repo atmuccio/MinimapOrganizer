@@ -136,32 +136,45 @@ function Settings:RegisterSettings()
         _G.Settings.CreateSlider(category, setting, options, tooltip)
     end
 
-    -- Window Opacity
+    -- Close on Button Click
     do
-        local variable = "MinimapOrganizer_WindowOpacity"
-        local name = L.SETTINGS_WINDOW_OPACITY
-        local tooltip = L.SETTINGS_WINDOW_OPACITY_TOOLTIP
-        local defaultValue = 0.9
-        local minValue = 0.3
-        local maxValue = 1.0
-        local step = 0.05
+        local variable = "MinimapOrganizer_CloseOnClick"
+        local name = L.SETTINGS_CLOSE_ON_CLICK
+        local tooltip = L.SETTINGS_CLOSE_ON_CLICK_TOOLTIP
+        local defaultValue = false
 
         local function GetValue()
-            return MO.db.window.opacity
+            return MO.db.window.closeOnClick
         end
 
         local function SetValue(value)
-            MO.db.window.opacity = value
-            MO.CollectionWindow:UpdateOpacity()
+            MO.db.window.closeOnClick = value
         end
 
         local setting = _G.Settings.RegisterProxySetting(category, variable,
-            _G.Settings.VarType.Number, name, defaultValue, GetValue, SetValue)
-        local options = _G.Settings.CreateSliderOptions(minValue, maxValue, step)
-        options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, function(value)
-            return string.format("%d%%", value * 100)
-        end)
-        _G.Settings.CreateSlider(category, setting, options, tooltip)
+            _G.Settings.VarType.Boolean, name, defaultValue, GetValue, SetValue)
+        _G.Settings.CreateCheckbox(category, setting, tooltip)
+    end
+
+    -- Hide Search and Filter (single toggle for both top-row controls)
+    do
+        local variable = "MinimapOrganizer_HideTopRow"
+        local name = L.SETTINGS_HIDE_TOP_ROW
+        local tooltip = L.SETTINGS_HIDE_TOP_ROW_TOOLTIP
+        local defaultValue = false
+
+        local function GetValue()
+            return MO.db.window.hideTopRow
+        end
+
+        local function SetValue(value)
+            MO.db.window.hideTopRow = value
+            MO.CollectionWindow:UpdateTopRowVisibility()
+        end
+
+        local setting = _G.Settings.RegisterProxySetting(category, variable,
+            _G.Settings.VarType.Boolean, name, defaultValue, GetValue, SetValue)
+        _G.Settings.CreateCheckbox(category, setting, tooltip)
     end
 
     -- Theme
@@ -172,8 +185,7 @@ function Settings:RegisterSettings()
 
         local function GetOptions()
             local container = _G.Settings.CreateControlTextContainer()
-            local themeNames = MO.CollectionWindow:GetThemeNames()
-            for _, themeName in ipairs(themeNames) do
+            for _, themeName in ipairs(MO.Skins:GetThemeNames()) do
                 local displayName = L["THEME_" .. string.upper(themeName)] or themeName
                 container:Add(themeName, displayName)
             end
@@ -195,45 +207,32 @@ function Settings:RegisterSettings()
         _G.Settings.CreateDropdown(category, setting, GetOptions, tooltip)
     end
 
-    -- Close on Button Click
+    -- Window Opacity (multiplier on the theme's own alpha)
     do
-        local variable = "MinimapOrganizer_CloseOnClick"
-        local name = L.SETTINGS_CLOSE_ON_CLICK
-        local tooltip = L.SETTINGS_CLOSE_ON_CLICK_TOOLTIP
-        local defaultValue = false
+        local variable = "MinimapOrganizer_WindowOpacity"
+        local name = L.SETTINGS_WINDOW_OPACITY
+        local tooltip = L.SETTINGS_WINDOW_OPACITY_TOOLTIP
+        local defaultValue = 1.0
+        local minValue = 0.3
+        local maxValue = 1.0
+        local step = 0.05
 
         local function GetValue()
-            return MO.db.window.closeOnClick
+            return MO.db.window.opacity
         end
 
         local function SetValue(value)
-            MO.db.window.closeOnClick = value
+            MO.db.window.opacity = value
+            MO.CollectionWindow:ApplyTheme()
         end
 
         local setting = _G.Settings.RegisterProxySetting(category, variable,
-            _G.Settings.VarType.Boolean, name, defaultValue, GetValue, SetValue)
-        _G.Settings.CreateCheckbox(category, setting, tooltip)
-    end
-
-    -- Hide Category Filter
-    do
-        local variable = "MinimapOrganizer_HideFilter"
-        local name = L.SETTINGS_HIDE_FILTER
-        local tooltip = L.SETTINGS_HIDE_FILTER_TOOLTIP
-        local defaultValue = false
-
-        local function GetValue()
-            return MO.db.window.hideFilter
-        end
-
-        local function SetValue(value)
-            MO.db.window.hideFilter = value
-            MO.CollectionWindow:UpdateFilterVisibility()
-        end
-
-        local setting = _G.Settings.RegisterProxySetting(category, variable,
-            _G.Settings.VarType.Boolean, name, defaultValue, GetValue, SetValue)
-        _G.Settings.CreateCheckbox(category, setting, tooltip)
+            _G.Settings.VarType.Number, name, defaultValue, GetValue, SetValue)
+        local options = _G.Settings.CreateSliderOptions(minValue, maxValue, step)
+        options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, function(value)
+            return string.format("%d%%", value * 100)
+        end)
+        _G.Settings.CreateSlider(category, setting, options, tooltip)
     end
 
     -- Sort Method
