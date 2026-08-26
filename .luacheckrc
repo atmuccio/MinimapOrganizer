@@ -83,5 +83,11 @@ read_globals = {
 
     -- WoW API
     "C_AddOns",
+    "C_Texture",
     "LibStub",
+
+    -- Blizzard template helpers
+    "ButtonFrameTemplate_HidePortrait",
+    "ButtonFrameTemplate_HideButtonBar",
+    "SearchBoxTemplate_OnTextChanged",
 }

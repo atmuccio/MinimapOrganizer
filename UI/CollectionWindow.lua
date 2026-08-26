@@ -144,7 +144,7 @@ function CollectionWindow:CreateManageButton(parent)
     gear:SetAlpha(0.67)
     manageBtn.icon = gear
 
-    manageBtn:SetupMenu(function(dropdown, rootDescription)
+    manageBtn:SetupMenu(function(menu, rootDescription)
         rootDescription:CreateCheckbox(
             MO.L.MANAGE_MODE,
             function() return manageMode end,
@@ -203,7 +203,7 @@ function CollectionWindow:CreateCategoryDropdown(parent)
         CollectionWindow:RefreshLayout()
     end
 
-    dropdown:SetupMenu(function(dropdown, rootDescription)
+    dropdown:SetupMenu(function(menu, rootDescription)
         rootDescription:CreateRadio(MO.L.ALL_CATEGORIES, IsSelected, SetSelected, "All")
         rootDescription:CreateRadio("|cffffd200" .. MO.L.FAVORITES .. "|r", IsSelected, SetSelected, "__favorites__")
         rootDescription:CreateDivider()
