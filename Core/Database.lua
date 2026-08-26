@@ -115,15 +115,15 @@ end
 
 -- Handle version migrations
 function MO.Database:RunMigrations()
-    -- Collapse the old hideFilter/hideSearch pair into a single hideTopRow
-    -- if either was set.
+    -- Collapse the old hideFilter/hideSearch pair into a single hideTopRow.
+    -- Assign unconditionally when either legacy field exists — MergeDefaults
+    -- runs before this and always injects hideTopRow=false, so a nil-check
+    -- on hideTopRow would never fire for upgrading users.
     if MO.db.window then
         local hf = MO.db.window.hideFilter
         local hs = MO.db.window.hideSearch
         if hf ~= nil or hs ~= nil then
-            if MO.db.window.hideTopRow == nil then
-                MO.db.window.hideTopRow = hf == true or hs == true
-            end
+            MO.db.window.hideTopRow = hf == true or hs == true
             MO.db.window.hideFilter = nil
             MO.db.window.hideSearch = nil
         end

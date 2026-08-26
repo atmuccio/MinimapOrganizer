@@ -89,9 +89,10 @@ function CollectionWindow:CreateWindow()
     -- Escape to close
     tinsert(UISpecialFrames, "MinimapOrganizer_CollectionWindow")
 
-    -- Close button hook — reuse template's built-in X
+    -- Close button — HookScript preserves the template's default (which plays
+    -- the standard close sound); our hook runs the cleanup after.
     if mainWindow.CloseButton then
-        mainWindow.CloseButton:SetScript("OnClick", function()
+        mainWindow.CloseButton:HookScript("OnClick", function()
             CollectionWindow:Hide()
         end)
     end
@@ -367,8 +368,9 @@ function CollectionWindow:RefreshLayout()
 
     local opts = MO.db.window
     local topRowVisible = not opts.hideTopRow
-    -- ButtonFrameTemplate header ~24px + top-row 22px + gaps
-    local heightPadding = topRowVisible and 68 or 42
+    -- Content anchor: TOPLEFT (SIDE_INSET, -58 or -32) + BOTTOMRIGHT
+    -- (-SIDE_INSET, SIDE_INSET). Vertical chrome = 58+SIDE_INSET or 32+SIDE_INSET.
+    local heightPadding = topRowVisible and (58 + SIDE_INSET) or (32 + SIDE_INSET)
     local buttons, categoryBreaks = MO.ButtonManager:GetSortedButtons(categoryFilter, searchFilter)
     local content = mainWindow.content
 
