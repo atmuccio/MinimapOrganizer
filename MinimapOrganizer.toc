@@ -1,8 +1,8 @@
-## Interface: 120100
+## Interface: 120105
 ## Title: MinimapOrganizer
 ## Notes: Collects minimap buttons into a movable, organized window with categories and favorites
 ## Author: atmuccio
-## Version: 1.6.0
+## Version: 1.6.1
 ## SavedVariablesPerCharacter: MinimapOrganizerDB
 ## IconTexture: Interface\ICONS\Garrison_Building_Storehouse
 ## Category: Map

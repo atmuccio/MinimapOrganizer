@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.6.1] - 2026-10-14
+
+### Changed
+- Updated Interface version to 120105 for WoW 12.1.5 (The Promise of Tomorrow)
+
 ## [1.6.0] - 2026-08-26
 
 ### Added
