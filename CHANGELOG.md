@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.6.2] - 2026-11-04
+
+### Added
+- Support for World of Warcraft: Forever (Interface 16001) alongside Retail 12.1.5
+
 ## [1.6.1] - 2026-10-14
 
 ### Changed
