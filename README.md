@@ -22,7 +22,7 @@ A World of Warcraft addon that collects minimap buttons into a clean, organized 
 ## Installation
 
 1. Download the latest release
-2. Extract to `World of Warcraft/_retail_/Interface/AddOns/`
+2. Extract to `World of Warcraft/_retail_/Interface/AddOns/` (or `World of Warcraft/_forever_/Interface/AddOns/` for WoW: Forever)
 3. Restart WoW or `/reload`
 
 ## Usage
@@ -69,7 +69,7 @@ Access via `/mo settings` or the WoW addon settings panel:
 
 ## Requirements
 
-- World of Warcraft Retail 12.0+
+- World of Warcraft Retail 12.0+ or World of Warcraft: Forever
 
 ## License
 
