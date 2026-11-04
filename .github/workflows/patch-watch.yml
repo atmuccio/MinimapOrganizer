@@ -1,9 +1,10 @@
 name: WoW Patch Watch
 
-# Dependabot-style watcher: on patch days (Tue/Wed), check whether the live retail WoW
-# interface number has moved ahead of this addon's .toc. If (and only if) it
-# has, gather the patch's removed/deprecated APIs, scan this addon's Lua for
-# them, and open a tracking issue. Otherwise it exits cheaply with no changes.
+# Dependabot-style watcher: on patch days (Tue/Wed), check whether the live
+# interface number of either client this addon supports (retail WoW and WoW:
+# Forever) has moved ahead of this addon's .toc. If (and only if) one has, gather
+# that patch's removed/deprecated APIs, scan this addon's Lua for them, and open
+# a tracking issue for that client. Otherwise it exits cheaply with no changes.
 
 on:
   schedule:
@@ -36,112 +37,146 @@ jobs:
 
           TOC=$(ls *.toc 2>/dev/null | head -1)
           if [ -z "$TOC" ]; then echo "No .toc file found"; exit 1; fi
-          CURRENT=$(grep -iE '^## *Interface:' "$TOC" | grep -oE '[0-9]+' | head -1)
-          echo "Addon .toc: $TOC (interface $CURRENT)"
+          # Retail is always the first number on the Interface line. Forever is
+          # picked by its 16xxx pattern, and is absent from a retail-only .toc.
+          INTERFACES=$(grep -iE '^## *Interface:' "$TOC" | grep -oE '[0-9]+')
+          RETAIL_CURRENT=$(printf '%s\n' "$INTERFACES" | head -1)
+          FOREVER_CURRENT=$(printf '%s\n' "$INTERFACES" | grep -E '^16[0-9]{3}$' | head -1)
+          echo "Addon .toc: $TOC (retail $RETAIL_CURRENT, Forever ${FOREVER_CURRENT:-none})"
 
-          # Latest live retail build from wago.tools (auth-free).
-          VERSION=$(curl -fsSL --retry 3 https://wago.tools/api/builds | jq -r '.wow[0].version')
-          if [ -z "$VERSION" ] || [ "$VERSION" = "null" ]; then
-            echo "Could not determine live version; skipping."; exit 0
-          fi
-          IFS='.' read -r MAJ MIN PAT _ <<< "$VERSION"
-          LATEST=$(printf '%d%02d%02d' "$MAJ" "$MIN" "$PAT")
-          PATCH="$MAJ.$MIN.$PAT"
-          echo "Live retail build $VERSION -> interface $LATEST (patch $PATCH)"
-
-          # --- Gate: only do the expensive work when the version actually moved. ---
-          if [ -z "$CURRENT" ] || [ "$LATEST" -le "$CURRENT" ]; then
-            echo "Addon is up to date ($CURRENT >= $LATEST). Nothing to do."
-            exit 0
-          fi
-
-          # Skip if we already filed an issue for this interface (open or closed).
-          EXISTING=$(gh issue list --state all --search "Interface $LATEST in:title" --json number --jq 'length' 2>/dev/null)
-          if [ -n "$EXISTING" ] && [ "$EXISTING" != "0" ]; then
-            echo "An issue for interface $LATEST already exists; skipping."
-            exit 0
-          fi
-
-          echo "::notice::New interface $LATEST detected (was $CURRENT) - gathering details."
-
-          API_URL="https://warcraft.wiki.gg/wiki/Patch_${PATCH}/API_changes"
-          PATCH_URL="https://warcraft.wiki.gg/wiki/Patch_${PATCH}"
-
-          # Best-effort: pull removed/deprecated API symbols from the wiki and
-          # intersect them with this addon's Lua. Only symbols present in BOTH
-          # are reported, which keeps the signal relevant and low-noise.
-          WIKITEXT=$(curl -fsSL --retry 2 \
-            "https://warcraft.wiki.gg/api.php?action=parse&format=json&prop=wikitext&page=Patch_${PATCH}%2FAPI_changes" \
-            2>/dev/null | jq -r '.parse.wikitext["*"] // empty' 2>/dev/null)
-
-          : > scan.md
-          if [ -n "$WIKITEXT" ]; then
-            SECT=$(printf '%s\n' "$WIKITEXT" | awk '
-              /^=+.*([Rr]emoved|[Dd]eprecated).*=+/ { grab=1; next }
-              /^=+[^=]/ { grab=0 }
-              grab { print }')
-            SYMS=$(printf '%s\n' "$SECT" \
-              | grep -oE 'C_[A-Za-z]+\.[A-Za-z]+|[A-Z][A-Za-z0-9]+:[A-Za-z0-9]+|[A-Z][A-Za-z][A-Za-z0-9]{4,}' \
-              | sort -u | head -400)
-            FOUND=0
-            while IFS= read -r sym; do
-              [ -z "$sym" ] && continue
-              M=$(grep -rFn --include='*.lua' -- "$sym" . 2>/dev/null | head -5)
-              if [ -n "$M" ]; then
-                FOUND=1
-                printf -- '- **%s**\n' "$sym" >> scan.md
-                printf '%s\n' "$M" | sed 's/^/    /' >> scan.md
-              fi
-            done <<< "$SYMS"
-            if [ "$FOUND" = "0" ]; then
-              printf 'No removed/deprecated API symbols from this patch were found in this addon. Likely a clean Interface bump.\n' >> scan.md
-            fi
-          else
-            printf 'The patch API-changes page was not reachable yet (it is often published a few days after a patch goes live). Re-run this workflow or open the link above once it exists.\n' >> scan.md
-          fi
-
+          # Latest live builds for every product from wago.tools (auth-free).
+          BUILDS=$(curl -fsSL --retry 3 https://wago.tools/api/builds)
           ADDON="${GITHUB_REPOSITORY#*/}"
-          {
-            printf '## A new WoW retail patch is live\n\n'
-            printf 'The live retail interface is now **%s** (patch **%s**), ahead of **%s**'\''s current `## Interface: %s`.\n\n' "$LATEST" "$PATCH" "$ADDON" "$CURRENT"
-            printf 'Detected from the live `wow` build `%s` on wago.tools.\n\n' "$VERSION"
-            printf '### Reference links\n\n'
-            printf -- '- [Patch %s overview](%s)\n' "$PATCH" "$PATCH_URL"
-            printf -- '- [Patch %s API changes](%s)\n' "$PATCH" "$API_URL"
-            printf -- '- [Getting the current interface number](https://warcraft.wiki.gg/wiki/Getting_the_current_interface_number)\n\n'
-            printf '### Removed / deprecated APIs used by this addon (heuristic)\n\n'
-            cat scan.md
-            printf '\n'
-          } > body.md
 
-          {
-            printf '### Update checklist (`/wow-patch-update`)\n\n'
-            printf -- '- [ ] Confirm the interface number on Warcraft Wiki\n'
-            printf -- '- [ ] Review the API changes page for anything affecting this addon\n'
-            printf -- '- [ ] Bump `## Interface:` in the `.toc`\n'
-            printf -- '- [ ] Bump `## Version:` and any hardcoded runtime version string\n'
-            printf -- '- [ ] Apply code fixes if any removed/deprecated APIs are in use (see scan above)\n'
-            printf -- '- [ ] Add a `CHANGELOG.md` entry\n'
-            printf -- '- [ ] Commit, PR, merge, tag, and verify the release workflow\n\n'
-            printf -- '---\n'
-            printf '_Opened automatically by the WoW Patch Watch workflow. The API scan is a best-effort heuristic — always verify against the linked API changes page._\n'
-          } >> body.md
+          # Runs the whole check for one client. It returns rather than exits, so
+          # an up-to-date retail client doesn't stop the Forever check.
+          check_client() {
+            PRODUCT="$1"
+            CURRENT="$2"
 
-          gh label create wow-patch --color FFA500 --description "WoW patch compatibility" 2>/dev/null
-          TITLE="WoW $PATCH — Interface $LATEST available (addon update needed)"
-          URL=$(gh issue create --title "$TITLE" --body-file body.md --label wow-patch 2>/dev/null \
-                || gh issue create --title "$TITLE" --body-file body.md)
-          echo "Opened issue: $URL"
+            if [ "$PRODUCT" = "wowf" ]; then
+              CLIENT="Forever"
+              GAME="WoW: Forever"
+              SEARCH_PREFIX="Forever "
+              BUMP='Bump only the Forever number on the `## Interface:` line (keep the retail number first)'
+              NO_WIKI='No API-changes page was found for this patch. Warcraft Wiki may not publish one for WoW: Forever, so the links above may not resolve. Compare the `forever` branch of [Gethe/wow-ui-source](https://github.com/Gethe/wow-ui-source/tree/forever) instead.'
+            else
+              CLIENT="retail"
+              GAME="WoW"
+              SEARCH_PREFIX=""
+              BUMP='Bump `## Interface:` in the `.toc`'
+              NO_WIKI='The patch API-changes page was not reachable yet (it is often published a few days after a patch goes live). Re-run this workflow or open the link above once it exists.'
+            fi
 
-          # Notify Discord directly. The Discord Notifications workflow can't do
-          # this for us: issues opened via GITHUB_TOKEN don't trigger further
-          # workflow runs (GitHub's loop-prevention rule), so we post here.
-          if [ -n "${DISCORD_WEBHOOK:-}" ] && [ -n "$URL" ]; then
-            PAYLOAD=$(jq -n \
-              --arg title "🔼 WoW $PATCH — addon update needed" \
-              --arg desc "**$ADDON** is on interface \`$CURRENT\`; live retail is now \`$LATEST\` (patch $PATCH, build \`$VERSION\`). A tracking issue has been opened." \
-              --arg url "$URL" \
-              '{embeds:[{title:$title, description:$desc, url:$url, color:15105570}]}')
-            curl -s -H "Content-Type: application/json" -d "$PAYLOAD" "$DISCORD_WEBHOOK" >/dev/null \
-              && echo "Sent Discord notification." || echo "Discord notification failed (non-fatal)."
+            VERSION=$(printf '%s' "$BUILDS" | jq -r ".${PRODUCT}[0].version")
+            if [ -z "$VERSION" ] || [ "$VERSION" = "null" ]; then
+              echo "Could not determine live $CLIENT version; skipping."; return 0
+            fi
+            IFS='.' read -r MAJ MIN PAT _ <<< "$VERSION"
+            LATEST=$(printf '%d%02d%02d' "$MAJ" "$MIN" "$PAT")
+            PATCH="$MAJ.$MIN.$PAT"
+            echo "Live $CLIENT build $VERSION -> interface $LATEST (patch $PATCH)"
+
+            # --- Gate: only do the expensive work when the version actually moved. ---
+            if [ -z "$CURRENT" ] || [ "$LATEST" -le "$CURRENT" ]; then
+              echo "Addon is up to date ($CURRENT >= $LATEST). Nothing to do."
+              return 0
+            fi
+
+            # Skip if we already filed an issue for this interface (open or closed).
+            EXISTING=$(gh issue list --state all --search "${SEARCH_PREFIX}Interface $LATEST in:title" --json number --jq 'length' 2>/dev/null)
+            if [ -n "$EXISTING" ] && [ "$EXISTING" != "0" ]; then
+              echo "An issue for interface $LATEST already exists; skipping."
+              return 0
+            fi
+
+            echo "::notice::New interface $LATEST detected (was $CURRENT) - gathering details."
+
+            API_URL="https://warcraft.wiki.gg/wiki/Patch_${PATCH}/API_changes"
+            PATCH_URL="https://warcraft.wiki.gg/wiki/Patch_${PATCH}"
+
+            # Best-effort: pull removed/deprecated API symbols from the wiki and
+            # intersect them with this addon's Lua. Only symbols present in BOTH
+            # are reported, which keeps the signal relevant and low-noise.
+            WIKITEXT=$(curl -fsSL --retry 2 \
+              "https://warcraft.wiki.gg/api.php?action=parse&format=json&prop=wikitext&page=Patch_${PATCH}%2FAPI_changes" \
+              2>/dev/null | jq -r '.parse.wikitext["*"] // empty' 2>/dev/null)
+
+            : > scan.md
+            if [ -n "$WIKITEXT" ]; then
+              SECT=$(printf '%s\n' "$WIKITEXT" | awk '
+                /^=+.*([Rr]emoved|[Dd]eprecated).*=+/ { grab=1; next }
+                /^=+[^=]/ { grab=0 }
+                grab { print }')
+              SYMS=$(printf '%s\n' "$SECT" \
+                | grep -oE 'C_[A-Za-z]+\.[A-Za-z]+|[A-Z][A-Za-z0-9]+:[A-Za-z0-9]+|[A-Z][A-Za-z][A-Za-z0-9]{4,}' \
+                | sort -u | head -400)
+              FOUND=0
+              while IFS= read -r sym; do
+                [ -z "$sym" ] && continue
+                M=$(grep -rFn --include='*.lua' -- "$sym" . 2>/dev/null | head -5)
+                if [ -n "$M" ]; then
+                  FOUND=1
+                  printf -- '- **%s**\n' "$sym" >> scan.md
+                  printf '%s\n' "$M" | sed 's/^/    /' >> scan.md
+                fi
+              done <<< "$SYMS"
+              if [ "$FOUND" = "0" ]; then
+                printf 'No removed/deprecated API symbols from this patch were found in this addon. Likely a clean Interface bump.\n' >> scan.md
+              fi
+            else
+              printf '%s\n' "$NO_WIKI" >> scan.md
+            fi
+
+            {
+              printf '## A new WoW %s patch is live\n\n' "$CLIENT"
+              printf 'The live %s interface is now **%s** (patch **%s**), ahead of **%s**'\''s current `## Interface: %s`.\n\n' "$CLIENT" "$LATEST" "$PATCH" "$ADDON" "$CURRENT"
+              printf 'Detected from the live `%s` build `%s` on wago.tools.\n\n' "$PRODUCT" "$VERSION"
+              printf '### Reference links\n\n'
+              printf -- '- [Patch %s overview](%s)\n' "$PATCH" "$PATCH_URL"
+              printf -- '- [Patch %s API changes](%s)\n' "$PATCH" "$API_URL"
+              printf -- '- [Getting the current interface number](https://warcraft.wiki.gg/wiki/Getting_the_current_interface_number)\n\n'
+              printf '### Removed / deprecated APIs used by this addon (heuristic)\n\n'
+              cat scan.md
+              printf '\n'
+            } > body.md
+
+            {
+              printf '### Update checklist (`/wow-patch-update`)\n\n'
+              printf -- '- [ ] Confirm the interface number on Warcraft Wiki\n'
+              printf -- '- [ ] Review the API changes page for anything affecting this addon\n'
+              printf -- '- [ ] %s\n' "$BUMP"
+              printf -- '- [ ] Bump `## Version:` and any hardcoded runtime version string\n'
+              printf -- '- [ ] Apply code fixes if any removed/deprecated APIs are in use (see scan above)\n'
+              printf -- '- [ ] Add a `CHANGELOG.md` entry\n'
+              printf -- '- [ ] Commit, PR, merge, tag, and verify the release workflow\n\n'
+              printf -- '---\n'
+              printf '_Opened automatically by the WoW Patch Watch workflow. The API scan is a best-effort heuristic — always verify against the linked API changes page._\n'
+            } >> body.md
+
+            gh label create wow-patch --color FFA500 --description "WoW patch compatibility" 2>/dev/null
+            TITLE="$GAME $PATCH — Interface $LATEST available (addon update needed)"
+            URL=$(gh issue create --title "$TITLE" --body-file body.md --label wow-patch 2>/dev/null \
+                  || gh issue create --title "$TITLE" --body-file body.md)
+            echo "Opened issue: $URL"
+
+            # Notify Discord directly. The Discord Notifications workflow can't do
+            # this for us: issues opened via GITHUB_TOKEN don't trigger further
+            # workflow runs (GitHub's loop-prevention rule), so we post here.
+            if [ -n "${DISCORD_WEBHOOK:-}" ] && [ -n "$URL" ]; then
+              PAYLOAD=$(jq -n \
+                --arg title "🔼 $GAME $PATCH — addon update needed" \
+                --arg desc "**$ADDON** is on interface \`$CURRENT\`; live $CLIENT is now \`$LATEST\` (patch $PATCH, build \`$VERSION\`). A tracking issue has been opened." \
+                --arg url "$URL" \
+                '{embeds:[{title:$title, description:$desc, url:$url, color:15105570}]}')
+              curl -s -H "Content-Type: application/json" -d "$PAYLOAD" "$DISCORD_WEBHOOK" >/dev/null \
+                && echo "Sent Discord notification." || echo "Discord notification failed (non-fatal)."
+            fi
+          }
+
+          check_client wow "$RETAIL_CURRENT"
+          if [ -n "$FOREVER_CURRENT" ]; then
+            check_client wowf "$FOREVER_CURRENT"
+          else
+            echo "::warning::No 16xxx Forever number on the .toc Interface line; skipping the Forever check."
           fi
